@@ -1,0 +1,166 @@
+import React, { useState } from 'react';
+import Header from './components/Header';
+import SchoolView from './components/SchoolView';
+import InspectorView from './components/InspectorView';
+import AdminView from './components/AdminView';
+import EvidenceModal from './components/EvidenceModal';
+import { DUBAI_SCHOOLS, QCF_STATEMENTS } from './data/qcfData';
+
+export default function App() {
+  const [currentRole, setCurrentRole] = useState('school'); // 'school' | 'inspector' | 'admin'
+  const [schools, setSchools] = useState(DUBAI_SCHOOLS);
+  const [activeSchool, setActiveSchool] = useState(DUBAI_SCHOOLS[0]);
+
+  // Self-evaluation ratings state (keyed by statement ID)
+  const [userRatings, setUserRatings] = useState({
+    'stmt-1_1': 4,
+    'stmt-1_2': 5,
+    'stmt-1_3': 3,
+    'stmt-1_4': 4,
+    'stmt-2_1': 5,
+    'stmt-3_1a': 4,
+    'stmt-4_1': 5
+  });
+
+  // Pre-loaded multi-modal evidence items for rich demo
+  const [evidenceList, setEvidenceList] = useState([
+    {
+      id: 'ev-1',
+      statementId: 'stmt-1_1',
+      type: 'audio',
+      title: 'Interview Voice Note - Principal & Head of Careers',
+      url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3',
+      date: 'Sept 12, 2026',
+      note: 'Voice note discussing 4-year strategic career framework backing.'
+    },
+    {
+      id: 'ev-2',
+      statementId: 'stmt-1_1',
+      type: 'file',
+      title: 'School Board Resolution for Quality Careers 2026-2030.pdf',
+      url: 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf',
+      date: 'Sept 10, 2026'
+    },
+    {
+      id: 'ev-3',
+      statementId: 'stmt-2_1',
+      type: 'video',
+      title: 'Student University Fair & Career Guidance Session.mp4',
+      url: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4',
+      date: 'Sept 14, 2026'
+    },
+    {
+      id: 'ev-4',
+      statementId: 'stmt-4_1',
+      type: 'image',
+      title: 'Interactive Digital Careers Hub & Bulletin Board.png',
+      url: 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=800&auto=format&fit=crop&q=80',
+      date: 'Sept 11, 2026'
+    },
+    {
+      id: 'ev-5',
+      statementId: 'stmt-3_1a',
+      type: 'link',
+      title: 'Dubai Future Academy Student Internship Portal',
+      url: 'https://careers.dubaieducation2033.ae',
+      date: 'Sept 13, 2026'
+    }
+  ]);
+
+  // Modal State
+  const [isEvidenceModalOpen, setIsEvidenceModalOpen] = useState(false);
+  const [activeModalStatement, setActiveModalStatement] = useState(null);
+
+  const openEvidenceModal = (stmt) => {
+    setActiveModalStatement(stmt);
+    setIsEvidenceModalOpen(true);
+  };
+
+  const closeEvidenceModal = () => {
+    setIsEvidenceModalOpen(false);
+    setActiveModalStatement(null);
+  };
+
+  const handleAddEvidence = (newEvidence) => {
+    setEvidenceList(prev => [newEvidence, ...prev]);
+  };
+
+  const handleDeleteEvidence = (id) => {
+    setEvidenceList(prev => prev.filter(e => e.id !== id));
+  };
+
+  const handleSubmitSEF = () => {
+    setSchools(prev => prev.map(s => {
+      if (s.id === activeSchool.id) {
+        return { ...s, status: 'Submitted', completionPercentage: 100 };
+      }
+      return s;
+    }));
+    setActiveSchool(prev => ({ ...prev, status: 'Submitted', completionPercentage: 100 }));
+    alert(`Success! SEF for ${activeSchool.name} has been submitted to KHDA Inspectors.`);
+  };
+
+  return (
+    <div className="min-h-screen bg-[#F4F8F5] text-gray-900 font-sans pb-12 flex flex-col">
+      {/* Header with Role Switcher & Logo */}
+      <Header 
+        currentRole={currentRole}
+        setCurrentRole={setCurrentRole}
+        activeSchool={activeSchool}
+        setActiveSchool={setActiveSchool}
+        schools={schools}
+      />
+
+      {/* Main Role Content Views */}
+      <main className="flex-1">
+        {currentRole === 'school' && (
+          <SchoolView 
+            school={activeSchool}
+            userRatings={userRatings}
+            setUserRatings={setUserRatings}
+            evidenceList={evidenceList}
+            openEvidenceModal={openEvidenceModal}
+            onSubmitSEF={handleSubmitSEF}
+          />
+        )}
+
+        {currentRole === 'inspector' && (
+          <InspectorView 
+            schools={schools}
+            evidenceList={evidenceList}
+            userRatings={userRatings}
+          />
+        )}
+
+        {currentRole === 'admin' && (
+          <AdminView 
+            schools={schools}
+            setSchools={setSchools}
+          />
+        )}
+      </main>
+
+      {/* Multi-Modal Evidence Upload & Management Modal */}
+      <EvidenceModal 
+        statement={activeModalStatement}
+        isOpen={isEvidenceModalOpen}
+        onClose={closeEvidenceModal}
+        evidenceList={evidenceList}
+        onAddEvidence={handleAddEvidence}
+        onDeleteEvidence={handleDeleteEvidence}
+      />
+
+      {/* Footer */}
+      <footer className="mt-auto bg-[#16362B] text-emerald-200 border-t border-emerald-800 py-6 text-xs text-center">
+        <div className="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div>
+            <span className="font-bold text-white">Quality Careers Framework (QCF)</span> — Dubai Education 2033 Standards Platform
+          </div>
+          <div className="text-emerald-400 font-medium">
+            Beta Edition 2026 © KHDA & QCF Governing Directorate
+          </div>
+        </div>
+      </footer>
+    </div>
+  );
+}
