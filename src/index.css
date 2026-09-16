@@ -55,68 +55,72 @@ h1, h2, h3, h4, .font-heading {
   border: 1px solid rgba(52, 106, 87, 0.4);
 }
 
-/* PRINT & PDF GENERATION FIXES */
+/* PRINT & PDF GENERATION FIXES - BULLETPROOF MODAL PRINTING */
 @media print {
-  /* Set A4 page margins and size */
   @page {
     size: A4 portrait;
     margin: 12mm 10mm 12mm 10mm;
   }
 
-  /* Hide app navigation header, footer, background elements, and modals overlays */
-  header, footer, .print\:hidden {
-    display: none !important;
+  /* Hide everything on the DOM during print */
+  body * {
+    visibility: hidden !important;
   }
 
-  /* Reset body and html layout */
-  html, body, #root {
-    background: #ffffff !important;
-    color: #000000 !important;
+  /* Make ONLY the printable report element and all its children visible */
+  #printable-report, #printable-report * {
+    visibility: visible !important;
+  }
+
+  /* Position printable report cleanly at top left of printed page */
+  #printable-report {
+    position: absolute !important;
+    left: 0 !important;
+    top: 0 !important;
+    width: 100% !important;
     margin: 0 !important;
     padding: 0 !important;
-    width: 100% !important;
+    background: #ffffff !important;
+    color: #000000 !important;
+    overflow: visible !important;
+    max-height: none !important;
+    height: auto !important;
+    display: block !important;
+  }
+
+  /* Reset outer html/body */
+  html, body, #root {
+    background: #ffffff !important;
+    margin: 0 !important;
+    padding: 0 !important;
     height: auto !important;
     min-height: 0 !important;
     overflow: visible !important;
   }
 
-  /* Force modal overlays to expand completely across pages without clipping */
-  .fixed, .inset-0 {
-    position: static !important;
-    display: block !important;
-    padding: 0 !important;
-    margin: 0 !important;
-    background: transparent !important;
-    backdrop-filter: none !important;
-    width: 100% !important;
-    max-width: 100% !important;
-    height: auto !important;
-    max-height: none !important;
-    overflow: visible !important;
-    box-shadow: none !important;
-    border: none !important;
-  }
-
-  /* Allow internal modal divs to grow naturally */
-  .max-h-\[92vh\], .max-h-\[90vh\], .overflow-y-auto, .overflow-hidden {
-    max-height: none !important;
-    height: auto !important;
-    overflow: visible !important;
-  }
-
-  /* Table page breaks */
+  /* Table rendering rules */
   table {
     width: 100% !important;
     border-collapse: collapse !important;
+    display: table !important;
   }
 
   tr {
     page-break-inside: avoid !important;
     break-inside: avoid !important;
+    display: table-row !important;
   }
 
   thead {
     display: table-header-group !important;
+  }
+
+  tbody {
+    display: table-row-group !important;
+  }
+
+  td, th {
+    display: table-cell !important;
   }
 
   /* Preserve colors in PDF output */

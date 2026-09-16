@@ -221,7 +221,7 @@ export default function EvaluationReportModal({
               Detailed Standards Audit Log ({activeStatements.length} Standards)
             </h3>
 
-            <div className="border border-gray-200 rounded-xl overflow-hidden print:rounded-none print:border">
+            <div className="border border-gray-200 rounded-xl overflow-hidden print:overflow-visible print:block print:rounded-none print:border">
               <table className="w-full text-left border-collapse text-xs print:text-[11px]">
                 <thead>
                   <tr className="bg-[#16362B] text-white text-[10px] uppercase tracking-wider">
