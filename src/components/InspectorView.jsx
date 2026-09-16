@@ -7,31 +7,24 @@ import {
 import { QCF_DOMAINS, RATING_SCALE } from '../data/qcfData';
 import EvaluationReportModal from './EvaluationReportModal';
 
-export default function InspectorView({ schools, statements, evidenceList, userRatings }) {
+export default function InspectorView({ 
+  schools, 
+  statements, 
+  evidenceList, 
+  userRatings,
+  inspectorRatings,
+  setInspectorRatings,
+  inspectorVerdicts,
+  setInspectorVerdicts,
+  inspectorNotes,
+  setInspectorNotes
+}) {
   const [selectedSchoolId, setSelectedSchoolId] = useState('sch-101');
   const [selectedDomainId, setSelectedDomainId] = useState(1);
   const [selectedStmtId, setSelectedStmtId] = useState('stmt-1_1');
 
   // Report Modal state
   const [isReportModalOpen, setIsReportModalOpen] = useState(false);
-
-  // Inspector ratings & notes state
-  const [inspectorRatings, setInspectorRatings] = useState({
-    'stmt-1_1': 4,
-    'stmt-1_2': 5,
-    'stmt-1_3': 3,
-    'stmt-2_1': 5
-  });
-
-  const [inspectorVerdicts, setInspectorVerdicts] = useState({
-    'stmt-1_1': 'Approved',
-    'stmt-1_2': 'Approved',
-    'stmt-1_3': 'Needs Revision'
-  });
-
-  const [inspectorNotes, setInspectorNotes] = useState({
-    'stmt-1_1': 'Strong evidence of leadership involvement. Voice note from Principal confirmed 4-year strategy.'
-  });
 
   const selectedSchool = schools.find(s => s.id === selectedSchoolId) || schools[0];
   

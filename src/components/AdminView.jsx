@@ -2,18 +2,33 @@ import React, { useState } from 'react';
 import { 
   LayoutDashboard, School, ShieldCheck, Users, TrendingUp, Award, 
   UserPlus, Search, Filter, CheckCircle2, Clock, AlertCircle, Sparkles, 
-  Eye, EyeOff, Edit3, Plus, Save, X, FileText, Check, Settings2 
+  Eye, EyeOff, Edit3, Plus, Save, X, FileText, Check, Settings2, FileCheck2 
 } from 'lucide-react';
 import { 
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, 
   PieChart, Pie, Cell, Legend 
 } from 'recharts';
 import { INSPECTORS, QCF_DOMAINS } from '../data/qcfData';
+import EvaluationReportModal from './EvaluationReportModal';
 
-export default function AdminView({ schools, setSchools, statements, setStatements }) {
+export default function AdminView({ 
+  schools, 
+  setSchools, 
+  statements, 
+  setStatements,
+  userRatings = {},
+  inspectorRatings = {},
+  inspectorVerdicts = {},
+  inspectorNotes = {},
+  evidenceList = []
+}) {
   const [activeTab, setActiveTab] = useState('dashboard'); // 'dashboard' | 'questions'
   const [searchTerm, setSearchTerm] = useState('');
   const [filterStatus, setFilterStatus] = useState('All');
+
+  // Report Modal state in Admin View
+  const [isReportModalOpen, setIsReportModalOpen] = useState(false);
+  const [selectedReportSchool, setSelectedReportSchool] = useState(null);
 
   // Questions Manager Filters & State
   const [questionSearch, setQuestionSearch] = useState('');
@@ -121,6 +136,11 @@ export default function AdminView({ schools, setSchools, statements, setStatemen
 
     setStatements(prev => [...prev, newStmt]);
     setIsAddModalOpen(false);
+  };
+
+  const handleOpenReportModal = (sch) => {
+    setSelectedReportSchool(sch);
+    setIsReportModalOpen(true);
   };
 
   // Filtered Schools for Dashboard
@@ -310,7 +330,7 @@ export default function AdminView({ schools, setSchools, statements, setStatemen
                 <select
                   value={filterStatus}
                   onChange={(e) => setFilterStatus(e.target.value)}
-                  className="text-xs bg-gray-50 border border-gray-200 rounded-xl px-3 py-2 font-medium focus:outline-none focus:ring-2 focus:ring-emerald-600"
+                  className="text-xs bg-gray-50 border border-gray-200 rounded-xl px-3 py-2 font-medium focus:outline-none focus:ring-2 focus:ring-emerald-600 cursor-pointer"
                 >
                   <option value="All">All Statuses</option>
                   <option value="Submitted">Submitted</option>
@@ -381,10 +401,11 @@ export default function AdminView({ schools, setSchools, statements, setStatemen
                       </td>
                       <td className="p-4 pr-6 text-right">
                         <button
-                          onClick={() => alert(`Opening audit report for ${sch.name}`)}
-                          className="px-3 py-1.5 bg-[#16362B] text-white font-bold text-[11px] rounded-lg hover:bg-emerald-800 transition-colors"
+                          onClick={() => handleOpenReportModal(sch)}
+                          className="px-3.5 py-1.5 bg-[#16362B] hover:bg-emerald-700 text-white font-extrabold text-[11px] rounded-xl transition-all shadow-2xs flex items-center gap-1.5 inline-flex cursor-pointer"
                         >
-                          View Report
+                          <FileCheck2 className="w-3.5 h-3.5 text-emerald-400" />
+                          <span>View Report</span>
                         </button>
                       </td>
                     </tr>
@@ -629,7 +650,7 @@ export default function AdminView({ schools, setSchools, statements, setStatemen
                 </button>
                 <button
                   type="submit"
-                  className="px-5 py-2 bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold rounded-xl flex items-center gap-1.5 shadow-xs"
+                  className="px-5 py-2 bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold rounded-xl flex items-center gap-1.5 shadow-xs cursor-pointer"
                 >
                   <Save className="w-4 h-4" /> Save Question Changes
                 </button>
@@ -712,7 +733,7 @@ export default function AdminView({ schools, setSchools, statements, setStatemen
                 </button>
                 <button
                   type="submit"
-                  className="px-5 py-2 bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold rounded-xl flex items-center gap-1.5 shadow-xs"
+                  className="px-5 py-2 bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold rounded-xl flex items-center gap-1.5 shadow-xs cursor-pointer"
                 >
                   <Plus className="w-4 h-4" /> Create Standard Question
                 </button>
@@ -721,6 +742,19 @@ export default function AdminView({ schools, setSchools, statements, setStatemen
           </div>
         </div>
       )}
+
+      {/* OFFICIAL REPORT MODAL FOR ADMIN VIEW */}
+      <EvaluationReportModal
+        isOpen={isReportModalOpen}
+        onClose={() => setIsReportModalOpen(false)}
+        school={selectedReportSchool}
+        statements={statements}
+        userRatings={userRatings}
+        inspectorRatings={inspectorRatings}
+        inspectorVerdicts={inspectorVerdicts}
+        inspectorNotes={inspectorNotes}
+        evidenceList={evidenceList}
+      />
 
     </div>
   );

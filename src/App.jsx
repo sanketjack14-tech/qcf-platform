@@ -27,6 +27,24 @@ export default function App() {
     'stmt-4_1': 5
   });
 
+  // Inspector ratings & verdicts state (shared between Inspector and Admin view report)
+  const [inspectorRatings, setInspectorRatings] = useState({
+    'stmt-1_1': 4,
+    'stmt-1_2': 5,
+    'stmt-1_3': 3,
+    'stmt-2_1': 5
+  });
+
+  const [inspectorVerdicts, setInspectorVerdicts] = useState({
+    'stmt-1_1': 'Approved',
+    'stmt-1_2': 'Approved',
+    'stmt-1_3': 'Needs Revision'
+  });
+
+  const [inspectorNotes, setInspectorNotes] = useState({
+    'stmt-1_1': 'Strong evidence of leadership involvement. Voice note from Principal confirmed 4-year strategy.'
+  });
+
   // Pre-loaded multi-modal evidence items for rich demo
   const [evidenceList, setEvidenceList] = useState([
     {
@@ -141,6 +159,12 @@ export default function App() {
             statements={statements}
             evidenceList={evidenceList}
             userRatings={userRatings}
+            inspectorRatings={inspectorRatings}
+            setInspectorRatings={setInspectorRatings}
+            inspectorVerdicts={inspectorVerdicts}
+            setInspectorVerdicts={setInspectorVerdicts}
+            inspectorNotes={inspectorNotes}
+            setInspectorNotes={setInspectorNotes}
           />
         )}
 
@@ -150,6 +174,11 @@ export default function App() {
             setSchools={setSchools}
             statements={statements}
             setStatements={setStatements}
+            userRatings={userRatings}
+            inspectorRatings={inspectorRatings}
+            inspectorVerdicts={inspectorVerdicts}
+            inspectorNotes={inspectorNotes}
+            evidenceList={evidenceList}
           />
         )}
       </main>
