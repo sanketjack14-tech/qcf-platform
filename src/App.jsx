@@ -13,8 +13,29 @@ export default function App() {
   const [schools, setSchools] = useState(DUBAI_SCHOOLS);
   const [activeSchool, setActiveSchool] = useState(DUBAI_SCHOOLS[0]);
 
-  // Master QCF Statements state (allows Admin to add, edit, or hide questions)
-  const [statements, setStatements] = useState(QCF_STATEMENTS);
+  // Master QCF Statements state (allows Admin to add, edit, or hide questions with localStorage persistence)
+  const [statements, setStatements] = React.useState(() => {
+    try {
+      const saved = localStorage.getItem('qcf_statements');
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          return parsed;
+        }
+      }
+    } catch (e) {
+      console.error('Error reading qcf_statements from localStorage:', e);
+    }
+    return QCF_STATEMENTS;
+  });
+
+  React.useEffect(() => {
+    try {
+      localStorage.setItem('qcf_statements', JSON.stringify(statements));
+    } catch (e) {
+      console.error('Error writing qcf_statements to localStorage:', e);
+    }
+  }, [statements]);
 
   // Self-evaluation ratings state (keyed by statement ID)
   const [userRatings, setUserRatings] = useState({

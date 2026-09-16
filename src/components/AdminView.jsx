@@ -8,7 +8,7 @@ import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, 
   PieChart, Pie, Cell, Legend 
 } from 'recharts';
-import { INSPECTORS, QCF_DOMAINS } from '../data/qcfData';
+import { INSPECTORS, QCF_DOMAINS, QCF_STATEMENTS } from '../data/qcfData';
 import EvaluationReportModal from './EvaluationReportModal';
 
 export default function AdminView({ 
@@ -35,10 +35,22 @@ export default function AdminView({
   const [selectedDomainFilter, setSelectedDomainFilter] = useState('All');
   const [visibilityFilter, setVisibilityFilter] = useState('All'); // 'All' | 'Active' | 'Hidden'
 
-  // Modals state for Questions Manager
+  // Modals & Confirmation States for Questions Manager
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [editingStatement, setEditingStatement] = useState(null);
+
+  // Confirmation Modals
+  const [isConfirmAddOpen, setIsConfirmAddOpen] = useState(false);
+  const [pendingAddStatement, setPendingAddStatement] = useState(null);
+  
+  const [isConfirmEditOpen, setIsConfirmEditOpen] = useState(false);
+  const [pendingEditStatement, setPendingEditStatement] = useState(null);
+
+  const [isConfirmResetOpen, setIsConfirmResetOpen] = useState(false);
+
+  // Feedback Notification Toast
+  const [toastMessage, setToastMessage] = useState(null);
 
   // Form states for Add/Edit
   const [formCode, setFormCode] = useState('');
@@ -71,14 +83,28 @@ export default function AdminView({
     }));
   };
 
-  // Toggle Hide / Unhide question
+  // Toggle Hide / Unhide question with notification
   const handleToggleHide = (stmtId) => {
-    setStatements(prev => prev.map(s => {
-      if (s.id === stmtId) {
-        return { ...s, hidden: !s.hidden };
+    setStatements(prev => {
+      const updated = prev.map(s => {
+        if (s.id === stmtId) {
+          return { ...s, hidden: !s.hidden };
+        }
+        return s;
+      });
+      try {
+        localStorage.setItem('qcf_statements', JSON.stringify(updated));
+      } catch (err) {
+        console.error(err);
       }
-      return s;
-    }));
+      return updated;
+    });
+    
+    const target = statements.find(s => s.id === stmtId);
+    if (target) {
+      setToastMessage(target.hidden ? `👁️ Standard "${target.code}" is now Active.` : `🙈 Standard "${target.code}" is now Hidden.`);
+      setTimeout(() => setToastMessage(null), 4000);
+    }
   };
 
   // Open Edit Modal
@@ -90,37 +116,57 @@ export default function AdminView({
     setIsEditModalOpen(true);
   };
 
-  // Save Edit Question
-  const handleSaveEdit = (e) => {
+  // Step 1: Initiate Edit Question -> Ask Confirmation
+  const handleInitiateEdit = (e) => {
     e.preventDefault();
-    if (!formStatement.trim() || !formCode.trim()) return;
+    if (!formStatement.trim() || !formCode.trim() || !editingStatement) return;
 
-    setStatements(prev => prev.map(s => {
-      if (s.id === editingStatement.id) {
-        return {
-          ...s,
-          code: formCode.trim(),
-          statement: formStatement.trim(),
-          domainNumber: parseInt(formDomain, 10)
-        };
+    const updatedStmt = {
+      ...editingStatement,
+      code: formCode.trim(),
+      statement: formStatement.trim(),
+      domainNumber: parseInt(formDomain, 10)
+    };
+
+    setPendingEditStatement(updatedStmt);
+    setIsConfirmEditOpen(true);
+  };
+
+  // Step 2: Confirm & Apply Edit
+  const handleConfirmEdit = () => {
+    if (!pendingEditStatement) return;
+
+    setStatements(prev => {
+      const updated = prev.map(s => s.id === pendingEditStatement.id ? pendingEditStatement : s);
+      try {
+        localStorage.setItem('qcf_statements', JSON.stringify(updated));
+      } catch (err) {
+        console.error('Error saving to localStorage:', err);
       }
-      return s;
-    }));
+      return updated;
+    });
 
+    setToastMessage(`✅ Standard Question "${pendingEditStatement.code}" updated and saved successfully!`);
+    setTimeout(() => setToastMessage(null), 5000);
+
+    setIsConfirmEditOpen(false);
     setIsEditModalOpen(false);
     setEditingStatement(null);
+    setPendingEditStatement(null);
   };
 
   // Open Add Modal
   const openAddModal = () => {
-    setFormCode('5.9');
+    const defaultDomain = selectedDomainFilter !== 'All' ? parseInt(selectedDomainFilter, 10) : 5;
+    const existingInDomain = statements.filter(s => s.domainNumber === defaultDomain).length;
+    setFormCode(`${defaultDomain}.${existingInDomain + 1}`);
     setFormStatement('');
-    setFormDomain(5);
+    setFormDomain(defaultDomain);
     setIsAddModalOpen(true);
   };
 
-  // Save Add New Question
-  const handleSaveAdd = (e) => {
+  // Step 1: Initiate Add Question -> Ask Confirmation
+  const handleInitiateAdd = (e) => {
     e.preventDefault();
     if (!formStatement.trim() || !formCode.trim()) return;
 
@@ -134,8 +180,43 @@ export default function AdminView({
       hidden: false
     };
 
-    setStatements(prev => [...prev, newStmt]);
+    setPendingAddStatement(newStmt);
+    setIsConfirmAddOpen(true);
+  };
+
+  // Step 2: Confirm & Save Add Question to Framework
+  const handleConfirmAdd = () => {
+    if (!pendingAddStatement) return;
+
+    setStatements(prev => {
+      const updated = [...prev, pendingAddStatement];
+      try {
+        localStorage.setItem('qcf_statements', JSON.stringify(updated));
+      } catch (err) {
+        console.error('Error saving new statement to localStorage:', err);
+      }
+      return updated;
+    });
+
+    setToastMessage(`🎉 Standard Question "${pendingAddStatement.code}" created and added to KHDA QCF Framework!`);
+    setTimeout(() => setToastMessage(null), 5000);
+
+    setIsConfirmAddOpen(false);
     setIsAddModalOpen(false);
+    setPendingAddStatement(null);
+  };
+
+  // Reset Framework to Original 42 KHDA Standards
+  const handleResetFramework = () => {
+    setStatements(QCF_STATEMENTS);
+    try {
+      localStorage.removeItem('qcf_statements');
+    } catch (err) {
+      console.error(err);
+    }
+    setIsConfirmResetOpen(false);
+    setToastMessage("🔄 Reset Quality Careers Framework to default 42 KHDA standards.");
+    setTimeout(() => setToastMessage(null), 5000);
   };
 
   const handleOpenReportModal = (sch) => {
@@ -166,8 +247,22 @@ export default function AdminView({
   const hiddenCount = statements.filter(s => s.hidden).length;
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8 relative">
       
+      {/* Toast Notification */}
+      {toastMessage && (
+        <div className="fixed bottom-6 right-6 z-50 bg-[#16362B] text-white px-5 py-3.5 rounded-2xl shadow-2xl border border-emerald-500 flex items-center gap-3 animate-in slide-in-from-bottom duration-300">
+          <Sparkles className="w-5 h-5 text-emerald-400 shrink-0" />
+          <span className="text-xs font-bold">{toastMessage}</span>
+          <button 
+            onClick={() => setToastMessage(null)}
+            className="text-emerald-300 hover:text-white ml-2 text-xs font-bold cursor-pointer"
+          >
+            ✕
+          </button>
+        </div>
+      )}
+
       {/* Executive Header Banner */}
       <div className="bg-[#16362B] text-white rounded-3xl p-6 md:p-8 shadow-xl flex flex-col md:flex-row items-start md:items-center justify-between gap-6 border border-emerald-800">
         <div>
@@ -434,13 +529,24 @@ export default function AdminView({
                 </p>
               </div>
 
-              <button
-                onClick={openAddModal}
-                className="px-4 py-2.5 bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-xs rounded-xl shadow-xs flex items-center gap-2 transition-colors shrink-0 cursor-pointer"
-              >
-                <Plus className="w-4 h-4" />
-                <span>Add New Question / Standard</span>
-              </button>
+              <div className="flex items-center gap-2 shrink-0">
+                <button
+                  onClick={() => setIsConfirmResetOpen(true)}
+                  className="px-3 py-2.5 bg-amber-50 hover:bg-amber-100 border border-amber-200 text-amber-900 font-bold text-xs rounded-xl flex items-center gap-1.5 transition-colors cursor-pointer"
+                  title="Reset framework to default 42 KHDA standards"
+                >
+                  <Clock className="w-4 h-4 text-amber-700" />
+                  <span>Reset Default 42</span>
+                </button>
+
+                <button
+                  onClick={openAddModal}
+                  className="px-4 py-2.5 bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-xs rounded-xl shadow-xs flex items-center gap-2 transition-colors cursor-pointer"
+                >
+                  <Plus className="w-4 h-4" />
+                  <span>Add New Question / Standard</span>
+                </button>
+              </div>
             </div>
 
             {/* Metrics & Filter Bar */}
@@ -596,7 +702,7 @@ export default function AdminView({
               </button>
             </div>
 
-            <form onSubmit={handleSaveEdit} className="p-6 space-y-4">
+            <form onSubmit={handleInitiateEdit} className="p-6 space-y-4">
               <div>
                 <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1">
                   Standard Code / Identifier
@@ -605,7 +711,7 @@ export default function AdminView({
                   type="text"
                   value={formCode}
                   onChange={(e) => setFormCode(e.target.value)}
-                  className="w-full text-xs p-2.5 rounded-lg border border-gray-300 focus:ring-2 focus:ring-emerald-600 focus:outline-none"
+                  className="w-full text-xs p-2.5 rounded-lg border border-gray-300 focus:ring-2 focus:ring-emerald-600 focus:outline-none font-bold text-emerald-950"
                   required
                 />
               </div>
@@ -617,7 +723,7 @@ export default function AdminView({
                 <select
                   value={formDomain}
                   onChange={(e) => setFormDomain(e.target.value)}
-                  className="w-full text-xs p-2.5 rounded-lg border border-gray-300 focus:ring-2 focus:ring-emerald-600 focus:outline-none cursor-pointer"
+                  className="w-full text-xs p-2.5 rounded-lg border border-gray-300 focus:ring-2 focus:ring-emerald-600 focus:outline-none cursor-pointer font-medium"
                 >
                   {QCF_DOMAINS.map(d => (
                     <option key={d.id} value={d.id}>
@@ -635,7 +741,7 @@ export default function AdminView({
                   rows={4}
                   value={formStatement}
                   onChange={(e) => setFormStatement(e.target.value)}
-                  className="w-full text-xs p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-emerald-600 focus:outline-none"
+                  className="w-full text-xs p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-emerald-600 focus:outline-none leading-relaxed"
                   required
                 ></textarea>
               </div>
@@ -644,7 +750,7 @@ export default function AdminView({
                 <button
                   type="button"
                   onClick={() => setIsEditModalOpen(false)}
-                  className="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs font-bold rounded-xl"
+                  className="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs font-bold rounded-xl cursor-pointer"
                 >
                   Cancel
                 </button>
@@ -652,7 +758,7 @@ export default function AdminView({
                   type="submit"
                   className="px-5 py-2 bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold rounded-xl flex items-center gap-1.5 shadow-xs cursor-pointer"
                 >
-                  <Save className="w-4 h-4" /> Save Question Changes
+                  <Check className="w-4 h-4" /> Review & Confirm Edit
                 </button>
               </div>
             </form>
@@ -671,13 +777,13 @@ export default function AdminView({
               </div>
               <button
                 onClick={() => setIsAddModalOpen(false)}
-                className="text-emerald-300 hover:text-white"
+                className="text-emerald-300 hover:text-white cursor-pointer"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
 
-            <form onSubmit={handleSaveAdd} className="p-6 space-y-4">
+            <form onSubmit={handleInitiateAdd} className="p-6 space-y-4">
               <div>
                 <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1">
                   Standard Code / Number (e.g. 5.9)
@@ -687,7 +793,7 @@ export default function AdminView({
                   value={formCode}
                   onChange={(e) => setFormCode(e.target.value)}
                   placeholder="e.g. 5.9"
-                  className="w-full text-xs p-2.5 rounded-lg border border-gray-300 focus:ring-2 focus:ring-emerald-600 focus:outline-none"
+                  className="w-full text-xs p-2.5 rounded-lg border border-gray-300 focus:ring-2 focus:ring-emerald-600 focus:outline-none font-bold text-emerald-950"
                   required
                 />
               </div>
@@ -699,7 +805,7 @@ export default function AdminView({
                 <select
                   value={formDomain}
                   onChange={(e) => setFormDomain(e.target.value)}
-                  className="w-full text-xs p-2.5 rounded-lg border border-gray-300 focus:ring-2 focus:ring-emerald-600 focus:outline-none cursor-pointer"
+                  className="w-full text-xs p-2.5 rounded-lg border border-gray-300 focus:ring-2 focus:ring-emerald-600 focus:outline-none cursor-pointer font-medium"
                 >
                   {QCF_DOMAINS.map(d => (
                     <option key={d.id} value={d.id}>
@@ -718,7 +824,7 @@ export default function AdminView({
                   value={formStatement}
                   onChange={(e) => setFormStatement(e.target.value)}
                   placeholder="Enter the full question text for school self-evaluation..."
-                  className="w-full text-xs p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-emerald-600 focus:outline-none"
+                  className="w-full text-xs p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-emerald-600 focus:outline-none leading-relaxed"
                   required
                 ></textarea>
               </div>
@@ -727,7 +833,7 @@ export default function AdminView({
                 <button
                   type="button"
                   onClick={() => setIsAddModalOpen(false)}
-                  className="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs font-bold rounded-xl"
+                  className="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs font-bold rounded-xl cursor-pointer"
                 >
                   Cancel
                 </button>
@@ -735,10 +841,169 @@ export default function AdminView({
                   type="submit"
                   className="px-5 py-2 bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold rounded-xl flex items-center gap-1.5 shadow-xs cursor-pointer"
                 >
-                  <Plus className="w-4 h-4" /> Create Standard Question
+                  <Plus className="w-4 h-4" /> Review & Confirm Question
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* CONFIRMATION MODAL: ADD QUESTION */}
+      {isConfirmAddOpen && pendingAddStatement && (
+        <div className="fixed inset-0 z-60 flex items-center justify-center p-4 bg-emerald-950/80 backdrop-blur-sm animate-in fade-in duration-200">
+          <div className="bg-white rounded-2xl shadow-2xl border border-emerald-200 w-full max-w-lg overflow-hidden">
+            <div className="bg-[#16362B] text-white p-4 px-6 flex items-center justify-between">
+              <div className="flex items-center gap-2 font-extrabold text-sm">
+                <Sparkles className="w-4 h-4 text-emerald-400" />
+                <span>Confirm Adding New KHDA Standard</span>
+              </div>
+              <button
+                onClick={() => setIsConfirmAddOpen(false)}
+                className="text-emerald-300 hover:text-white cursor-pointer"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div className="p-6 space-y-4">
+              <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 text-amber-900 text-xs flex items-start gap-3">
+                <AlertCircle className="w-5 h-5 text-amber-700 shrink-0 mt-0.5" />
+                <div>
+                  <span className="font-extrabold block">Executive Confirmation Required</span>
+                  Are you sure you want to add this new question to the KHDA Quality Careers Framework? Once confirmed, it will immediately be saved to browser memory and apply to all school self-evaluations.
+                </div>
+              </div>
+
+              <div className="bg-emerald-50/70 border border-emerald-200 rounded-xl p-4 space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="bg-[#16362B] text-white font-extrabold text-xs px-2.5 py-1 rounded-md">
+                    Standard {pendingAddStatement.code}
+                  </span>
+                  <span className="text-[11px] font-bold text-emerald-800">
+                    Domain {pendingAddStatement.domainNumber}: {QCF_DOMAINS.find(d => d.id === pendingAddStatement.domainNumber)?.title}
+                  </span>
+                </div>
+                <p className="text-xs font-bold text-gray-900 pt-1 leading-relaxed">
+                  "{pendingAddStatement.statement}"
+                </p>
+              </div>
+
+              <div className="flex items-center justify-end gap-3 pt-2">
+                <button
+                  onClick={() => setIsConfirmAddOpen(false)}
+                  className="px-4 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs font-bold rounded-xl cursor-pointer"
+                >
+                  Go Back / Edit Details
+                </button>
+                <button
+                  onClick={handleConfirmAdd}
+                  className="px-5 py-2.5 bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-extrabold rounded-xl flex items-center gap-2 shadow-md cursor-pointer"
+                >
+                  <Check className="w-4 h-4 text-emerald-300" />
+                  <span>Yes, Confirm & Save Question</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* CONFIRMATION MODAL: EDIT QUESTION */}
+      {isConfirmEditOpen && pendingEditStatement && (
+        <div className="fixed inset-0 z-60 flex items-center justify-center p-4 bg-emerald-950/80 backdrop-blur-sm animate-in fade-in duration-200">
+          <div className="bg-white rounded-2xl shadow-2xl border border-emerald-200 w-full max-w-lg overflow-hidden">
+            <div className="bg-[#16362B] text-white p-4 px-6 flex items-center justify-between">
+              <div className="flex items-center gap-2 font-extrabold text-sm">
+                <Edit3 className="w-4 h-4 text-emerald-400" />
+                <span>Confirm Save Standard Edits</span>
+              </div>
+              <button
+                onClick={() => setIsConfirmEditOpen(false)}
+                className="text-emerald-300 hover:text-white cursor-pointer"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div className="p-6 space-y-4">
+              <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-4 text-emerald-900 text-xs flex items-start gap-3">
+                <CheckCircle2 className="w-5 h-5 text-emerald-700 shrink-0 mt-0.5" />
+                <div>
+                  <span className="font-extrabold block">Confirm Standard Modification</span>
+                  You are about to save changes to Standard <strong>{pendingEditStatement.code}</strong>.
+                </div>
+              </div>
+
+              <div className="bg-gray-50 border border-gray-200 rounded-xl p-4 space-y-2">
+                <div className="text-xs font-bold text-gray-500 uppercase tracking-wider">New Statement Text:</div>
+                <p className="text-xs font-bold text-gray-900 leading-relaxed">
+                  "{pendingEditStatement.statement}"
+                </p>
+              </div>
+
+              <div className="flex items-center justify-end gap-3 pt-2">
+                <button
+                  onClick={() => setIsConfirmEditOpen(false)}
+                  className="px-4 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs font-bold rounded-xl cursor-pointer"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleConfirmEdit}
+                  className="px-5 py-2.5 bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-extrabold rounded-xl flex items-center gap-2 shadow-md cursor-pointer"
+                >
+                  <Save className="w-4 h-4 text-emerald-300" />
+                  <span>Yes, Apply Changes</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* CONFIRMATION MODAL: RESET FRAMEWORK */}
+      {isConfirmResetOpen && (
+        <div className="fixed inset-0 z-60 flex items-center justify-center p-4 bg-emerald-950/80 backdrop-blur-sm animate-in fade-in duration-200">
+          <div className="bg-white rounded-2xl shadow-2xl border border-amber-200 w-full max-w-lg overflow-hidden">
+            <div className="bg-[#16362B] text-white p-4 px-6 flex items-center justify-between">
+              <div className="flex items-center gap-2 font-extrabold text-sm text-amber-300">
+                <Clock className="w-4 h-4 text-amber-400" />
+                <span>Reset KHDA Framework Standards</span>
+              </div>
+              <button
+                onClick={() => setIsConfirmResetOpen(false)}
+                className="text-emerald-300 hover:text-white cursor-pointer"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div className="p-6 space-y-4">
+              <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 text-amber-950 text-xs flex items-start gap-3">
+                <AlertCircle className="w-5 h-5 text-amber-700 shrink-0 mt-0.5" />
+                <div>
+                  <span className="font-extrabold block">Warning: Reset to Original 42 Standards</span>
+                  This will remove any custom questions you have added and reset the KHDA Framework back to the default 42 core standards.
+                </div>
+              </div>
+
+              <div className="flex items-center justify-end gap-3 pt-2">
+                <button
+                  onClick={() => setIsConfirmResetOpen(false)}
+                  className="px-4 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs font-bold rounded-xl cursor-pointer"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleResetFramework}
+                  className="px-5 py-2.5 bg-amber-600 hover:bg-amber-700 text-white text-xs font-extrabold rounded-xl flex items-center gap-2 shadow-md cursor-pointer"
+                >
+                  <Clock className="w-4 h-4" />
+                  <span>Reset All to Default 42</span>
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       )}
