@@ -11,6 +11,9 @@ export default function App() {
   const [schools, setSchools] = useState(DUBAI_SCHOOLS);
   const [activeSchool, setActiveSchool] = useState(DUBAI_SCHOOLS[0]);
 
+  // Master QCF Statements state (allows Admin to add, edit, or hide questions)
+  const [statements, setStatements] = useState(QCF_STATEMENTS);
+
   // Self-evaluation ratings state (keyed by statement ID)
   const [userRatings, setUserRatings] = useState({
     'stmt-1_1': 4,
@@ -67,7 +70,7 @@ export default function App() {
     }
   ]);
 
-  // Modal State
+  // Modal State for Evidence
   const [isEvidenceModalOpen, setIsEvidenceModalOpen] = useState(false);
   const [activeModalStatement, setActiveModalStatement] = useState(null);
 
@@ -116,6 +119,7 @@ export default function App() {
         {currentRole === 'school' && (
           <SchoolView 
             school={activeSchool}
+            statements={statements}
             userRatings={userRatings}
             setUserRatings={setUserRatings}
             evidenceList={evidenceList}
@@ -127,6 +131,7 @@ export default function App() {
         {currentRole === 'inspector' && (
           <InspectorView 
             schools={schools}
+            statements={statements}
             evidenceList={evidenceList}
             userRatings={userRatings}
           />
@@ -136,6 +141,8 @@ export default function App() {
           <AdminView 
             schools={schools}
             setSchools={setSchools}
+            statements={statements}
+            setStatements={setStatements}
           />
         )}
       </main>

@@ -4,10 +4,11 @@ import {
   CheckCircle2, Plus, Info, FileCheck, Mic, Video, Image as ImageIcon, 
   FileText, Globe, MessageSquare, AlertCircle, Save, Send 
 } from 'lucide-react';
-import { QCF_DOMAINS, RATING_SCALE, QCF_STATEMENTS } from '../data/qcfData';
+import { QCF_DOMAINS, RATING_SCALE } from '../data/qcfData';
 
 export default function SchoolView({ 
   school, 
+  statements,
   userRatings, 
   setUserRatings, 
   evidenceList, 
@@ -25,13 +26,16 @@ export default function SchoolView({
     5: TrendingUp
   };
 
+  // Filter active (non-hidden) statements
+  const activeStatements = (statements || []).filter(s => !s.hidden);
+
   const currentDomain = QCF_DOMAINS.find(d => d.id === activeDomainId);
-  const domainStatements = QCF_STATEMENTS.filter(s => s.domainNumber === activeDomainId);
+  const domainStatements = activeStatements.filter(s => s.domainNumber === activeDomainId);
 
   // Calculate completion statistics
-  const totalStatementsCount = QCF_STATEMENTS.length;
-  const ratedCount = Object.keys(userRatings).length;
-  const overallProgress = Math.round((ratedCount / totalStatementsCount) * 100);
+  const totalStatementsCount = activeStatements.length;
+  const ratedCount = activeStatements.filter(s => userRatings[s.id]).length;
+  const overallProgress = Math.round((ratedCount / (totalStatementsCount || 1)) * 100);
 
   const toggleGuidance = (stmtId) => {
     setExpandedGuidance(prev => ({
@@ -89,7 +93,7 @@ export default function SchoolView({
         <div className="mt-6 pt-6 border-t border-emerald-800/60">
           <div className="flex justify-between text-xs text-emerald-200 mb-2 font-medium">
             <span>Quality Careers Framework Evaluation Completion</span>
-            <span>{ratedCount} of {totalStatementsCount} evaluated</span>
+            <span>{ratedCount} of {totalStatementsCount} active standards evaluated</span>
           </div>
           <div className="w-full h-3 bg-emerald-950/80 rounded-full overflow-hidden p-0.5 border border-emerald-800/50">
             <div
@@ -107,16 +111,16 @@ export default function SchoolView({
             const Icon = domainIcons[domain.id];
             const isActive = activeDomainId === domain.id;
             
-            // Calculate domain completion
-            const stmts = QCF_STATEMENTS.filter(s => s.domainNumber === domain.id);
+            // Calculate domain completion for active statements
+            const stmts = activeStatements.filter(s => s.domainNumber === domain.id);
             const domainRated = stmts.filter(s => userRatings[s.id]).length;
-            const domainPercent = Math.round((domainRated / stmts.length) * 100);
+            const domainPercent = Math.round((domainRated / (stmts.length || 1)) * 100);
 
             return (
               <button
                 key={domain.id}
                 onClick={() => setActiveDomainId(domain.id)}
-                className={`p-3.5 rounded-xl text-left transition-all relative overflow-hidden flex flex-col justify-between ${
+                className={`p-3.5 rounded-xl text-left transition-all relative overflow-hidden flex flex-col justify-between cursor-pointer ${
                   isActive
                     ? 'bg-[#16362B] text-white shadow-md ring-2 ring-emerald-600'
                     : 'bg-emerald-50/50 text-emerald-950 hover:bg-emerald-100/80 border border-emerald-100'
@@ -152,22 +156,22 @@ export default function SchoolView({
       <div className="bg-white rounded-2xl p-6 border border-emerald-100 shadow-xs flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
         <div>
           <div className="flex items-center gap-2 text-emerald-800 font-bold text-xs uppercase tracking-wider">
-            <span>Domain {currentDomain.id} of 5</span>
+            <span>Domain {currentDomain?.id} of 5</span>
             <span>•</span>
-            <span>{domainStatements.length} Core Standards</span>
+            <span>{domainStatements.length} Active Standards</span>
           </div>
           <h2 className="text-xl font-extrabold text-gray-900 mt-1 font-heading">
-            {currentDomain.title}
+            {currentDomain?.title}
           </h2>
           <p className="text-xs text-gray-600 mt-1 max-w-3xl">
-            {currentDomain.subtitle}
+            {currentDomain?.subtitle}
           </p>
         </div>
       </div>
 
       {/* Domain Statements Form List */}
       <div className="space-y-6">
-        {domainStatements.map((stmt, idx) => {
+        {domainStatements.map((stmt) => {
           const currentRating = userRatings[stmt.id];
           const stmtEvidences = evidenceList.filter(e => e.statementId === stmt.id);
           const isGuidanceOpen = expandedGuidance[stmt.id];
@@ -194,7 +198,7 @@ export default function SchoolView({
                       </h3>
                       <button
                         onClick={() => toggleGuidance(stmt.id)}
-                        className="inline-flex items-center gap-1 text-xs font-semibold text-emerald-700 hover:text-emerald-900 mt-1.5 transition-colors"
+                        className="inline-flex items-center gap-1 text-xs font-semibold text-emerald-700 hover:text-emerald-900 mt-1.5 transition-colors cursor-pointer"
                       >
                         <Info className="w-3.5 h-3.5" />
                         <span>{isGuidanceOpen ? 'Hide KHDA Guidance & Rubric' : 'View KHDA Evaluation Rubric'}</span>
@@ -238,7 +242,7 @@ export default function SchoolView({
                           key={r.level}
                           type="button"
                           onClick={() => handleRatingSelect(stmt.id, r.level)}
-                          className={`p-3 rounded-xl text-left border text-xs transition-all flex flex-col justify-between ${
+                          className={`p-3 rounded-xl text-left border text-xs transition-all flex flex-col justify-between cursor-pointer ${
                             isSelected
                               ? 'bg-[#2C6450] text-white border-[#16362B] shadow-sm ring-2 ring-emerald-500/40 font-bold'
                               : 'bg-gray-50/60 hover:bg-emerald-50/60 text-gray-700 border-gray-200 hover:border-emerald-300'
@@ -290,7 +294,7 @@ export default function SchoolView({
 
                   <button
                     onClick={() => openEvidenceModal(stmt)}
-                    className="px-4 py-2 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 text-emerald-900 font-bold text-xs rounded-xl flex items-center gap-2 transition-colors shrink-0"
+                    className="px-4 py-2 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 text-emerald-900 font-bold text-xs rounded-xl flex items-center gap-2 transition-colors shrink-0 cursor-pointer"
                   >
                     <Plus className="w-4 h-4 text-emerald-700" />
                     <span>Attach Evidence (Audio/Video/Doc)</span>
@@ -308,7 +312,7 @@ export default function SchoolView({
         <button
           disabled={activeDomainId === 1}
           onClick={() => setActiveDomainId(prev => Math.max(1, prev - 1))}
-          className="px-5 py-2.5 bg-gray-100 hover:bg-gray-200 disabled:opacity-40 text-gray-800 font-bold text-xs rounded-xl flex items-center gap-2 transition-colors"
+          className="px-5 py-2.5 bg-gray-100 hover:bg-gray-200 disabled:opacity-40 text-gray-800 font-bold text-xs rounded-xl flex items-center gap-2 transition-colors cursor-pointer"
         >
           <ChevronLeft className="w-4 h-4" /> Previous Domain
         </button>
@@ -316,7 +320,7 @@ export default function SchoolView({
         <div className="flex items-center gap-3">
           <button
             onClick={() => alert("Draft saved successfully!")}
-            className="px-4 py-2.5 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 text-emerald-900 font-bold text-xs rounded-xl flex items-center gap-2 transition-colors"
+            className="px-4 py-2.5 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 text-emerald-900 font-bold text-xs rounded-xl flex items-center gap-2 transition-colors cursor-pointer"
           >
             <Save className="w-4 h-4" /> Save Progress Draft
           </button>
@@ -324,7 +328,7 @@ export default function SchoolView({
           {activeDomainId < 5 ? (
             <button
               onClick={() => setActiveDomainId(prev => Math.min(5, prev + 1))}
-              className="px-6 py-2.5 bg-[#16362B] hover:bg-[#2C6450] text-white font-bold text-xs rounded-xl flex items-center gap-2 transition-colors shadow-sm"
+              className="px-6 py-2.5 bg-[#16362B] hover:bg-[#2C6450] text-white font-bold text-xs rounded-xl flex items-center gap-2 transition-colors shadow-sm cursor-pointer"
             >
               <span>Next Domain</span>
               <ChevronRight className="w-4 h-4" />
@@ -332,7 +336,7 @@ export default function SchoolView({
           ) : (
             <button
               onClick={onSubmitSEF}
-              className="px-6 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl flex items-center gap-2 transition-colors shadow-md animate-pulse"
+              className="px-6 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl flex items-center gap-2 transition-colors shadow-md animate-pulse cursor-pointer"
             >
               <Send className="w-4 h-4" />
               <span>Submit SEF to Inspector</span>
