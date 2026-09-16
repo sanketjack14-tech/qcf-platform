@@ -77,8 +77,8 @@ export default function EvaluationReportModal({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-emerald-950/70 backdrop-blur-sm overflow-y-auto animate-in fade-in duration-200">
-      <div className="bg-white rounded-3xl shadow-2xl border border-emerald-100 w-full max-w-4xl overflow-hidden flex flex-col max-h-[92vh]">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-emerald-950/70 backdrop-blur-sm overflow-y-auto animate-in fade-in duration-200 print:static print:p-0 print:bg-transparent print:overflow-visible print:block print:h-auto print:max-h-none">
+      <div className="bg-white rounded-3xl shadow-2xl border border-emerald-100 w-full max-w-4xl overflow-hidden flex flex-col max-h-[92vh] print:max-h-none print:h-auto print:overflow-visible print:border-none print:shadow-none print:w-full print:max-w-none print:rounded-none">
         
         {/* Modal Header Controls (Hidden on Print) */}
         <div className="bg-[#16362B] text-white p-4 px-6 flex items-center justify-between border-b border-emerald-800 print:hidden">
@@ -116,13 +116,13 @@ export default function EvaluationReportModal({
         </div>
 
         {/* Report Content Body (Printable Area) */}
-        <div id="printable-report" className="p-8 md:p-10 overflow-y-auto space-y-8 bg-white text-gray-900 print:p-0 print:overflow-visible">
+        <div id="printable-report" className="p-8 md:p-10 overflow-y-auto space-y-8 bg-white text-gray-900 print:p-0 print:overflow-visible print:h-auto print:space-y-6">
           
           {/* Document Header */}
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 pb-6 border-b-2 border-emerald-900">
+          <div className="flex flex-row items-center justify-between gap-6 pb-6 border-b-2 border-emerald-900 print:pb-4">
             <QCFLogo className="w-16 h-16 shrink-0" size="large" />
 
-            <div className="text-right sm:text-right">
+            <div className="text-right">
               <div className="text-xs font-bold text-emerald-800 uppercase tracking-widest">
                 Knowledge & Human Development Authority (KHDA)
               </div>
@@ -136,7 +136,7 @@ export default function EvaluationReportModal({
           </div>
 
           {/* School & Audit Metadata Grid */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 bg-emerald-50/60 p-4 rounded-2xl border border-emerald-100">
+          <div className="grid grid-cols-4 gap-4 bg-emerald-50/60 p-4 rounded-2xl border border-emerald-100 print:p-3 print:rounded-xl">
             <div>
               <div className="text-[10px] font-bold text-emerald-800 uppercase tracking-wider">Target School</div>
               <div className="text-xs font-black text-gray-900 mt-0.5">{school.name}</div>
@@ -160,7 +160,7 @@ export default function EvaluationReportModal({
           </div>
 
           {/* Score & Rating Executive Summary */}
-          <div className="bg-[#16362B] text-white rounded-2xl p-6 shadow-md border border-emerald-800 flex flex-col md:flex-row items-center justify-between gap-6">
+          <div className="bg-[#16362B] text-white rounded-2xl p-6 shadow-md border border-emerald-800 flex flex-row items-center justify-between gap-6 print:p-4 print:rounded-xl print:shadow-none">
             <div className="space-y-1">
               <span className="bg-emerald-700 text-emerald-100 font-bold text-[10px] px-3 py-1 rounded-full uppercase tracking-wider">
                 Executive Assessment Verdict
@@ -173,7 +173,7 @@ export default function EvaluationReportModal({
               </p>
             </div>
 
-            <div className="flex items-center gap-6 bg-emerald-950/90 border border-emerald-700 p-4 rounded-xl shrink-0">
+            <div className="flex items-center gap-6 bg-emerald-950/90 border border-emerald-700 p-4 rounded-xl shrink-0 print:p-3">
               <div className="text-center">
                 <div className="text-3xl font-black text-emerald-400 font-heading">{overallAvgScore} / 5.0</div>
                 <div className="text-[10px] text-emerald-300 uppercase tracking-wider font-bold">Overall QCF Index</div>
@@ -189,13 +189,13 @@ export default function EvaluationReportModal({
           </div>
 
           {/* Domain Breakdown Table */}
-          <div>
+          <div className="print:break-inside-avoid">
             <h3 className="text-xs font-extrabold text-gray-900 uppercase tracking-wider mb-3 flex items-center gap-2">
               <Award className="w-4 h-4 text-emerald-700" />
               <span>Domain Score Summary</span>
             </h3>
 
-            <div className="grid grid-cols-1 md:grid-cols-5 gap-3">
+            <div className="grid grid-cols-5 gap-3">
               {QCF_DOMAINS.map(d => {
                 const domainStmts = activeStatements.filter(s => s.domainNumber === d.id);
                 let dScore = 0;
@@ -205,7 +205,7 @@ export default function EvaluationReportModal({
                 const dAvg = (dScore / (domainStmts.length || 1)).toFixed(1);
 
                 return (
-                  <div key={d.id} className="bg-emerald-50/50 border border-emerald-100 p-3 rounded-xl text-center">
+                  <div key={d.id} className="bg-emerald-50/50 border border-emerald-100 p-3 rounded-xl text-center print:p-2">
                     <div className="text-[10px] font-extrabold text-emerald-900 uppercase">{d.code}</div>
                     <div className="text-lg font-black text-[#16362B] mt-0.5">{dAvg} / 5.0</div>
                     <div className="text-[10px] text-gray-500 truncate mt-0.5">{d.title}</div>
@@ -221,15 +221,15 @@ export default function EvaluationReportModal({
               Detailed Standards Audit Log ({activeStatements.length} Standards)
             </h3>
 
-            <div className="border border-gray-200 rounded-xl overflow-hidden">
-              <table className="w-full text-left border-collapse text-xs">
+            <div className="border border-gray-200 rounded-xl overflow-hidden print:rounded-none print:border">
+              <table className="w-full text-left border-collapse text-xs print:text-[11px]">
                 <thead>
                   <tr className="bg-[#16362B] text-white text-[10px] uppercase tracking-wider">
-                    <th className="p-3 pl-4">Std Code</th>
-                    <th className="p-3">Standard Statement Description</th>
-                    <th className="p-3 text-center">School Rating</th>
-                    <th className="p-3 text-center">Inspector Rating</th>
-                    <th className="p-3">Inspector Verdict & Findings</th>
+                    <th className="p-3 pl-4 print:p-2">Std Code</th>
+                    <th className="p-3 print:p-2">Standard Statement Description</th>
+                    <th className="p-3 text-center print:p-2">School Rating</th>
+                    <th className="p-3 text-center print:p-2">Inspector Rating</th>
+                    <th className="p-3 print:p-2">Inspector Verdict & Findings</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-200">
@@ -240,24 +240,24 @@ export default function EvaluationReportModal({
                     const notes = inspectorNotes[stmt.id] || 'Evidence verified in accordance with KHDA guidelines.';
 
                     return (
-                      <tr key={stmt.id} className="hover:bg-gray-50">
-                        <td className="p-3 pl-4 font-black text-emerald-900 whitespace-nowrap">
+                      <tr key={stmt.id} className="hover:bg-gray-50 print:break-inside-avoid">
+                        <td className="p-3 pl-4 font-black text-emerald-900 whitespace-nowrap print:p-2">
                           Std {stmt.code}
                         </td>
-                        <td className="p-3 font-semibold text-gray-800 leading-snug">
+                        <td className="p-3 font-semibold text-gray-800 leading-snug print:p-2">
                           {stmt.statement}
                         </td>
-                        <td className="p-3 text-center">
+                        <td className="p-3 text-center print:p-2">
                           <span className="bg-gray-100 text-gray-800 font-bold px-2 py-0.5 rounded text-[11px]">
                             L{schoolRating}
                           </span>
                         </td>
-                        <td className="p-3 text-center">
+                        <td className="p-3 text-center print:p-2">
                           <span className="bg-emerald-100 text-emerald-950 font-black px-2 py-0.5 rounded text-[11px]">
                             L{inspectorScore}
                           </span>
                         </td>
-                        <td className="p-3">
+                        <td className="p-3 print:p-2">
                           <div className="flex items-center gap-1.5 mb-0.5">
                             <span className={`text-[10px] font-extrabold px-2 py-0.5 rounded ${
                               verdict === 'Approved' ? 'bg-emerald-100 text-emerald-900' : 'bg-amber-100 text-amber-900'
@@ -278,7 +278,7 @@ export default function EvaluationReportModal({
           </div>
 
           {/* Official Signatures & Circulation Footer */}
-          <div className="pt-6 border-t-2 border-gray-200 grid grid-cols-2 gap-8 text-xs">
+          <div className="pt-6 border-t-2 border-gray-200 grid grid-cols-2 gap-8 text-xs print:break-inside-avoid print:pt-4">
             <div>
               <div className="font-bold text-gray-900">Lead Inspector Sign-Off</div>
               <div className="mt-4 pt-2 border-b border-gray-400 font-serif italic text-gray-700">
@@ -296,7 +296,7 @@ export default function EvaluationReportModal({
             </div>
           </div>
 
-          <div className="text-center text-[10px] text-gray-400 pt-4">
+          <div className="text-center text-[10px] text-gray-400 pt-4 print:pt-2">
             Official Quality Careers Framework (QCF) Report — Issued for Circulation to Dubai Schools & KHDA Directorate.
           </div>
 
