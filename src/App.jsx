@@ -5,7 +5,7 @@ import SchoolView from './components/SchoolView';
 import InspectorView from './components/InspectorView';
 import AdminView from './components/AdminView';
 import EvidenceModal from './components/EvidenceModal';
-import { DUBAI_SCHOOLS, QCF_STATEMENTS } from './data/qcfData';
+import { DUBAI_SCHOOLS, QCF_STATEMENTS, sortStatements } from './data/qcfData';
 
 export default function App() {
   // Role State: null (shows Main Gateway Landing) | 'school' | 'inspector' | 'admin'
@@ -20,13 +20,13 @@ export default function App() {
       if (saved) {
         const parsed = JSON.parse(saved);
         if (Array.isArray(parsed) && parsed.length > 0) {
-          return parsed;
+          return sortStatements(parsed);
         }
       }
     } catch (e) {
       console.error('Error reading qcf_statements from localStorage:', e);
     }
-    return QCF_STATEMENTS;
+    return sortStatements(QCF_STATEMENTS);
   });
 
   React.useEffect(() => {

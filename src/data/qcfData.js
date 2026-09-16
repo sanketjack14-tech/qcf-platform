@@ -1,6 +1,15 @@
 // Quality Careers Framework (QCF) Master Dataset
 // Extracted directly from official KHDA QCF SEF Specifications
 
+export const sortStatements = (statementsList = []) => {
+  return [...statementsList].sort((a, b) => {
+    if (a.domainNumber !== b.domainNumber) {
+      return a.domainNumber - b.domainNumber;
+    }
+    return a.code.localeCompare(b.code, undefined, { numeric: true, sensitivity: 'base' });
+  });
+};
+
 export const QCF_DOMAINS = [
   {
     id: 1,

@@ -8,7 +8,7 @@ import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, 
   PieChart, Pie, Cell, Legend 
 } from 'recharts';
-import { INSPECTORS, QCF_DOMAINS, QCF_STATEMENTS } from '../data/qcfData';
+import { INSPECTORS, QCF_DOMAINS, QCF_STATEMENTS, sortStatements } from '../data/qcfData';
 import EvaluationReportModal from './EvaluationReportModal';
 
 export default function AdminView({ 
@@ -137,7 +137,7 @@ export default function AdminView({
     if (!pendingEditStatement) return;
 
     setStatements(prev => {
-      const updated = prev.map(s => s.id === pendingEditStatement.id ? pendingEditStatement : s);
+      const updated = sortStatements(prev.map(s => s.id === pendingEditStatement.id ? pendingEditStatement : s));
       try {
         localStorage.setItem('qcf_statements', JSON.stringify(updated));
       } catch (err) {
@@ -157,12 +157,20 @@ export default function AdminView({
 
   // Open Add Modal
   const openAddModal = () => {
-    const defaultDomain = selectedDomainFilter !== 'All' ? parseInt(selectedDomainFilter, 10) : 5;
+    const defaultDomain = selectedDomainFilter !== 'All' ? parseInt(selectedDomainFilter, 10) : 1;
     const existingInDomain = statements.filter(s => s.domainNumber === defaultDomain).length;
     setFormCode(`${defaultDomain}.${existingInDomain + 1}`);
     setFormStatement('');
     setFormDomain(defaultDomain);
     setIsAddModalOpen(true);
+  };
+
+  // Handle Domain Change in Add Modal to suggest code at the end of that domain
+  const handleDomainSelectChange = (newDomainId) => {
+    const domNum = parseInt(newDomainId, 10);
+    setFormDomain(domNum);
+    const existingInDomain = statements.filter(s => s.domainNumber === domNum).length;
+    setFormCode(`${domNum}.${existingInDomain + 1}`);
   };
 
   // Step 1: Initiate Add Question -> Ask Confirmation
@@ -189,7 +197,7 @@ export default function AdminView({
     if (!pendingAddStatement) return;
 
     setStatements(prev => {
-      const updated = [...prev, pendingAddStatement];
+      const updated = sortStatements([...prev, pendingAddStatement]);
       try {
         localStorage.setItem('qcf_statements', JSON.stringify(updated));
       } catch (err) {
@@ -208,7 +216,8 @@ export default function AdminView({
 
   // Reset Framework to Original 42 KHDA Standards
   const handleResetFramework = () => {
-    setStatements(QCF_STATEMENTS);
+    const sortedDefault = sortStatements(QCF_STATEMENTS);
+    setStatements(sortedDefault);
     try {
       localStorage.removeItem('qcf_statements');
     } catch (err) {
@@ -232,8 +241,8 @@ export default function AdminView({
     return matchesSearch && matchesStatus;
   });
 
-  // Filtered Statements for Questions Manager
-  const filteredStatements = statements.filter(stmt => {
+  // Filtered & Sorted Statements for Questions Manager
+  const rawFilteredStatements = statements.filter(stmt => {
     const matchesSearch = stmt.code.toLowerCase().includes(questionSearch.toLowerCase()) ||
                           stmt.statement.toLowerCase().includes(questionSearch.toLowerCase());
     const matchesDomain = selectedDomainFilter === 'All' || stmt.domainNumber === parseInt(selectedDomainFilter, 10);
@@ -242,6 +251,8 @@ export default function AdminView({
                               (visibilityFilter === 'Hidden' && stmt.hidden);
     return matchesSearch && matchesDomain && matchesVisibility;
   });
+
+  const filteredStatements = sortStatements(rawFilteredStatements);
 
   const activeCount = statements.filter(s => !s.hidden).length;
   const hiddenCount = statements.filter(s => s.hidden).length;
@@ -804,7 +815,7 @@ export default function AdminView({
                 </label>
                 <select
                   value={formDomain}
-                  onChange={(e) => setFormDomain(e.target.value)}
+                  onChange={(e) => handleDomainSelectChange(e.target.value)}
                   className="w-full text-xs p-2.5 rounded-lg border border-gray-300 focus:ring-2 focus:ring-emerald-600 focus:outline-none cursor-pointer font-medium"
                 >
                   {QCF_DOMAINS.map(d => (
