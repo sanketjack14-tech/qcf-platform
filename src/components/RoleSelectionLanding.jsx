@@ -12,7 +12,7 @@ export default function RoleSelectionLanding({ onSelectRole }) {
 
       {/* Top Header Logo */}
       <div className="relative z-10 max-w-7xl mx-auto w-full flex items-center justify-between pb-8 border-b border-emerald-800/60">
-        <QCFLogo className="w-14 h-14" size="large" />
+        <QCFLogo className="w-14 h-14" size="large" variant="light" />
         <div className="hidden sm:flex items-center gap-2 bg-emerald-950/80 border border-emerald-800 px-4 py-1.5 rounded-full text-xs text-emerald-200">
           <Sparkles className="w-3.5 h-3.5 text-emerald-400" />
           <span>Dubai Education 2033 Standards Initiative</span>
