@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import Header from './components/Header';
+import PortalHeader from './components/PortalHeader';
+import RoleSelectionLanding from './components/RoleSelectionLanding';
 import SchoolView from './components/SchoolView';
 import InspectorView from './components/InspectorView';
 import AdminView from './components/AdminView';
@@ -7,7 +8,8 @@ import EvidenceModal from './components/EvidenceModal';
 import { DUBAI_SCHOOLS, QCF_STATEMENTS } from './data/qcfData';
 
 export default function App() {
-  const [currentRole, setCurrentRole] = useState('school'); // 'school' | 'inspector' | 'admin'
+  // Role State: null (shows Main Gateway Landing) | 'school' | 'inspector' | 'admin'
+  const [currentRole, setCurrentRole] = useState(null); 
   const [schools, setSchools] = useState(DUBAI_SCHOOLS);
   const [activeSchool, setActiveSchool] = useState(DUBAI_SCHOOLS[0]);
 
@@ -103,18 +105,23 @@ export default function App() {
     alert(`Success! SEF for ${activeSchool.name} has been submitted to KHDA Inspectors.`);
   };
 
+  // If no role is selected, show the Role Selection Landing Page
+  if (!currentRole) {
+    return <RoleSelectionLanding onSelectRole={(role) => setCurrentRole(role)} />;
+  }
+
   return (
     <div className="min-h-screen bg-[#F4F8F5] text-gray-900 font-sans pb-12 flex flex-col">
-      {/* Header with Role Switcher & Logo */}
-      <Header 
+      {/* Dedicated Portal Header (no demo switcher strip) */}
+      <PortalHeader 
         currentRole={currentRole}
-        setCurrentRole={setCurrentRole}
+        onLogout={() => setCurrentRole(null)}
         activeSchool={activeSchool}
         setActiveSchool={setActiveSchool}
         schools={schools}
       />
 
-      {/* Main Role Content Views */}
+      {/* Main Dedicated Portal Views */}
       <main className="flex-1">
         {currentRole === 'school' && (
           <SchoolView 
@@ -158,7 +165,7 @@ export default function App() {
       />
 
       {/* Footer */}
-      <footer className="mt-auto bg-[#16362B] text-emerald-200 border-t border-emerald-800 py-6 text-xs text-center">
+      <footer className="mt-auto bg-[#16362B] text-emerald-200 border-t border-emerald-800 py-6 text-xs text-center print:hidden">
         <div className="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-4">
           <div>
             <span className="font-bold text-white">Quality Careers Framework (QCF)</span> — Dubai Education 2033 Standards Platform
