@@ -46,12 +46,23 @@ export default function SchoolView({
   };
 
   const handleRatingSelect = (statementId, level) => {
-    setUserRatings(prev => ({
-      ...prev,
+    const nextRatings = {
+      ...userRatings,
       [statementId]: level
-    }));
+    };
+    setUserRatings(nextRatings);
+
+    // Calculate updated completion percentage
+    const newRatedCount = activeStatements.filter(s => nextRatings[s.id]).length;
+    const newProgress = Math.round((newRatedCount / (totalStatementsCount || 1)) * 100);
+
     if (school?.id) {
       saveUserRatingToDB(school.id, statementId, level);
+      saveSchoolToDB({
+        ...school,
+        completionPercentage: newProgress,
+        status: school.status === 'Certified' || school.status === 'Submitted' ? school.status : 'Draft'
+      });
     }
   };
 
@@ -64,7 +75,7 @@ export default function SchoolView({
       };
       saveSchoolToDB(updatedSchool);
     }
-    alert(`✅ Progress Draft saved successfully! (${ratedCount} of ${totalStatementsCount} standards saved to Cloud DB)`);
+    alert(`✅ Progress Draft saved successfully! (${ratedCount} of ${totalStatementsCount} standards [${overallProgress}%] saved to Cloud DB)`);
   };
 
   return (

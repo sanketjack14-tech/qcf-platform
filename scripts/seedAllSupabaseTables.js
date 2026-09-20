@@ -9,24 +9,8 @@ const supabase = createClient(supabaseUrl, supabaseAnonKey);
 async function seedAll() {
   console.log('--- SYNCING FRONTEND & POSTGRESQL DATABASE ---');
 
-  // 1. Seed Schools
-  console.log('1. Seeding Schools Table...');
-  const schoolPayloads = DUBAI_SCHOOLS.map(s => ({
-    id: s.id,
-    name: s.name,
-    curriculum: s.curriculum,
-    khda_rating: s.khdaRating,
-    district: s.district,
-    completion_percentage: s.completionPercentage || 0,
-    status: s.status || 'Draft',
-    assigned_inspector: s.assignedInspector || 'Dr. Sarah Al Mansoori'
-  }));
-  const { error: schErr } = await supabase.from('schools').upsert(schoolPayloads);
-  if (schErr) console.error('Schools Error:', schErr);
-  else console.log('✓ Schools synced successfully.');
-
-  // 2. Seed Statements (42 KHDA Standards)
-  console.log('2. Seeding QCF Statements (42 KHDA Standards)...');
+  // 1. Seed Statements (42 KHDA Standards)
+  console.log('1. Seeding QCF Statements (42 KHDA Standards)...');
   const uniqueStmtsMap = new Map();
   QCF_STATEMENTS.forEach(s => {
     uniqueStmtsMap.set(s.id, {
@@ -44,23 +28,76 @@ async function seedAll() {
   if (stmtErr) console.error('Statements Error:', stmtErr);
   else console.log('✓ 42 KHDA Standards synced successfully.');
 
-  // 3. Seed Initial SEF Ratings & Inspector Reviews for sch-101
-  console.log('3. Seeding SEF Ratings & Inspector Reviews Table...');
-  const initialRatings = [
-    { school_id: 'sch-101', statement_id: 'stmt-1_1', user_rating: 4, inspector_rating: 4, inspector_verdict: 'Approved', inspector_notes: 'Strong evidence of leadership involvement. Voice note from Principal confirmed 4-year strategy.' },
-    { school_id: 'sch-101', statement_id: 'stmt-1_2', user_rating: 5, inspector_rating: 5, inspector_verdict: 'Approved', inspector_notes: 'Fully aligns with KHDA Quality Careers specification.' },
-    { school_id: 'sch-101', statement_id: 'stmt-1_3', user_rating: 3, inspector_rating: 3, inspector_verdict: 'Needs Revision', inspector_notes: 'Requires updated board minutes for 2026.' },
-    { school_id: 'sch-101', statement_id: 'stmt-1_4', user_rating: 4, inspector_rating: 4, inspector_verdict: 'Approved', inspector_notes: 'Clear budget allocation.' },
-    { school_id: 'sch-101', statement_id: 'stmt-2_1', user_rating: 5, inspector_rating: 5, inspector_verdict: 'Approved', inspector_notes: 'Video evidence shows active student engagement in university fair.' },
-    { school_id: 'sch-101', statement_id: 'stmt-3_1a', user_rating: 4, inspector_rating: 4, inspector_verdict: 'Approved', inspector_notes: 'Internship portal integration verified.' },
-    { school_id: 'sch-101', statement_id: 'stmt-4_1', user_rating: 5, inspector_rating: 5, inspector_verdict: 'Approved', inspector_notes: 'Digital bulletin board and careers portal photo evidence uploaded.' }
+  // Extract all statement IDs in order
+  const allStmtIds = stmtPayloads.map(s => s.id);
+
+  // 2. Generate SEF Ratings & Inspector Reviews for all 5 schools to match target percentages
+  // Target counts out of 42:
+  // sch-101 (Dubai Int Academy): 37 statements rated = 88%
+  // sch-102 (GEMS Wellington): 42 statements rated = 100%
+  // sch-103 (Repton School): 27 statements rated = 64%
+  // sch-104 (Emirates Int): 18 statements rated = 43%
+  // sch-105 (Dubai British): 8 statements rated = 19%
+
+  const schoolRatingsConfig = [
+    { schoolId: 'sch-101', ratedCount: 37, targetPercentage: 88, status: 'Under Inspection' },
+    { schoolId: 'sch-102', ratedCount: 42, targetPercentage: 100, status: 'Submitted' },
+    { schoolId: 'sch-103', ratedCount: 27, targetPercentage: 64, status: 'In Progress' },
+    { schoolId: 'sch-104', ratedCount: 18, targetPercentage: 43, status: 'Draft' },
+    { schoolId: 'sch-105', ratedCount: 8, targetPercentage: 19, status: 'Draft' }
   ];
 
-  const { error: ratErr } = await supabase.from('sef_ratings').upsert(initialRatings, { onConflict: 'school_id,statement_id' });
+  const allRatingsPayloads = [];
+
+  schoolRatingsConfig.forEach(cfg => {
+    const idsToRate = allStmtIds.slice(0, cfg.ratedCount);
+    idsToRate.forEach((stmtId, index) => {
+      // Generate realistic scores between Level 3, 4, 5
+      const userRating = (index % 3 === 0) ? 5 : ((index % 2 === 0) ? 4 : 3);
+      const inspectorRating = (index % 4 === 0) ? userRating - 1 : userRating;
+      const verdict = (inspectorRating >= userRating) ? 'Approved' : 'Needs Revision';
+      const notes = verdict === 'Approved' 
+        ? `Verified by KHDA Auditor. Standard ${stmtId} meets Quality Careers criteria.`
+        : `Requires additional documentation for Standard ${stmtId}.`;
+
+      allRatingsPayloads.push({
+        school_id: cfg.schoolId,
+        statement_id: stmtId,
+        user_rating: userRating,
+        inspector_rating: inspectorRating,
+        inspector_verdict: verdict,
+        inspector_notes: notes,
+        updated_at: new Date().toISOString()
+      });
+    });
+  });
+
+  console.log(`2. Seeding ${allRatingsPayloads.length} SEF Ratings across all 5 schools...`);
+  const { error: ratErr } = await supabase.from('sef_ratings').upsert(allRatingsPayloads, { onConflict: 'school_id,statement_id' });
   if (ratErr) console.error('Ratings Error:', ratErr);
   else console.log('✓ SEF Ratings & Inspector Reviews synced successfully.');
 
-  // 4. Seed Multi-Modal Evidence Items for sch-101
+  // 3. Seed Schools Table with aligned completion percentages
+  console.log('3. Seeding Schools Table...');
+  const schoolPayloads = DUBAI_SCHOOLS.map(s => {
+    const cfg = schoolRatingsConfig.find(c => c.schoolId === s.id);
+    const actualPct = cfg ? Math.round((cfg.ratedCount / allStmtIds.length) * 100) : s.completionPercentage;
+    return {
+      id: s.id,
+      name: s.name,
+      curriculum: s.curriculum,
+      khda_rating: s.khdaRating,
+      district: s.district,
+      completion_percentage: actualPct,
+      status: s.status || 'Draft',
+      assigned_inspector: s.assignedInspector || 'Dr. Sarah Al Mansoori'
+    };
+  });
+  const { error: schErr } = await supabase.from('schools').upsert(schoolPayloads);
+  if (schErr) console.error('Schools Error:', schErr);
+  else console.log('✓ Schools synced successfully with calculated completion percentages.');
+
+  // 4. Seed Multi-Modal Evidence Items for sch-101 and sch-102
   console.log('4. Seeding Evidence Items Table...');
   const initialEvidence = [
     {
