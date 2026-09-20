@@ -242,8 +242,8 @@ export const QCF_STATEMENTS = [
     "evidenceCount": 0
   },
   {
-    "id": "stmt-2_1",
-    "code": "2.1",
+    "id": "stmt-2_10",
+    "code": "2.10",
     "domainNumber": 2,
     "statement": "Global and local university links allow for a careers education to be developed in conjunction with what universities know and do",
     "defaultRating": 3,

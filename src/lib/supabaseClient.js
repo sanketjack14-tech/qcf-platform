@@ -1,8 +1,8 @@
 import { createClient } from '@supabase/supabase-js';
 import { DUBAI_SCHOOLS, QCF_STATEMENTS, sortStatements } from '../data/qcfData';
 
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || '';
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || '';
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || 'https://rifnbkzdhwjbdrffqwzs.supabase.co';
+const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJpZm5ia3pkaHdqYmRyZmZxd3pzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODk5MTQwNTgsImV4cCI6MjEwNTQ5MDA1OH0.iPwCyTuAQdUjvIe91Nks7dCrmBtTcB0fovGsX5VgwJg';
 
 export const isSupabaseConfigured = Boolean(supabaseUrl && supabaseAnonKey);
 
@@ -198,6 +198,23 @@ export async function saveUserRatingToDB(schoolId, statementId, userRating) {
     }, { onConflict: 'school_id,statement_id' });
   } catch (err) {
     console.error('Supabase saveUserRatingToDB error:', err);
+  }
+}
+
+export async function saveAllUserRatingsToDB(schoolId, userRatings) {
+  if (!isSupabaseConfigured || !schoolId || !userRatings) return;
+  try {
+    const rows = Object.entries(userRatings).map(([stmtId, level]) => ({
+      school_id: schoolId,
+      statement_id: stmtId,
+      user_rating: level,
+      updated_at: new Date().toISOString()
+    }));
+    if (rows.length > 0) {
+      await supabase.from('sef_ratings').upsert(rows, { onConflict: 'school_id,statement_id' });
+    }
+  } catch (err) {
+    console.error('Supabase saveAllUserRatingsToDB error:', err);
   }
 }
 

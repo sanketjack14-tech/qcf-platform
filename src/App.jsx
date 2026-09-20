@@ -48,15 +48,16 @@ export default function App() {
     }
   }, [statements]);
 
-  // Self-evaluation ratings state (keyed by statement ID)
+  // Self-evaluation ratings state (keyed by statement ID) - 37 rated standards for Dubai International Academy (88%)
   const [userRatings, setUserRatings] = useState({
-    'stmt-1_1': 4,
-    'stmt-1_2': 5,
-    'stmt-1_3': 3,
-    'stmt-1_4': 4,
-    'stmt-2_1': 5,
-    'stmt-3_1a': 4,
-    'stmt-4_1': 5
+    'stmt-1_1': 4, 'stmt-1_2': 5, 'stmt-1_3': 3, 'stmt-1_4': 4, 'stmt-1_5': 4,
+    'stmt-1_6': 5, 'stmt-1_7': 4, 'stmt-1_8': 3, 'stmt-1_9': 4, 'stmt-2_1': 5,
+    'stmt-2_2': 4, 'stmt-2_3': 3, 'stmt-2_4': 4, 'stmt-2_5': 5, 'stmt-2_6': 4,
+    'stmt-2_7': 3, 'stmt-2_8': 4, 'stmt-2_9': 5, 'stmt-2_10': 4, 'stmt-3_1a': 4,
+    'stmt-3_1b': 3, 'stmt-3_1c': 4, 'stmt-3_1d': 5, 'stmt-3_1e': 4, 'stmt-3_1f': 3,
+    'stmt-3_1g': 4, 'stmt-4_1': 5, 'stmt-4_2': 4, 'stmt-4_3': 3, 'stmt-4_4': 4,
+    'stmt-4_5': 5, 'stmt-4_6': 4, 'stmt-4_7': 3, 'stmt-4_8': 4, 'stmt-5_1': 5,
+    'stmt-5_2': 4, 'stmt-5_3': 3
   });
 
   // Inspector ratings & verdicts state (shared between Inspector and Admin view report)

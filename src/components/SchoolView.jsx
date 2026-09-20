@@ -5,7 +5,7 @@ import {
   FileText, Globe, MessageSquare, AlertCircle, Save, Send 
 } from 'lucide-react';
 import { QCF_DOMAINS, RATING_SCALE } from '../data/qcfData';
-import { saveUserRatingToDB, saveSchoolToDB } from '../lib/supabaseClient';
+import { saveUserRatingToDB, saveSchoolToDB, saveAllUserRatingsToDB } from '../lib/supabaseClient';
 
 export default function SchoolView({ 
   school, 
@@ -66,14 +66,15 @@ export default function SchoolView({
     }
   };
 
-  const handleSaveDraft = () => {
+  const handleSaveDraft = async () => {
     if (school?.id) {
       const updatedSchool = {
         ...school,
         completionPercentage: overallProgress,
         status: school.status === 'Certified' || school.status === 'Submitted' ? school.status : 'Draft'
       };
-      saveSchoolToDB(updatedSchool);
+      await saveSchoolToDB(updatedSchool);
+      await saveAllUserRatingsToDB(school.id, userRatings);
     }
     alert(`✅ Progress Draft saved successfully! (${ratedCount} of ${totalStatementsCount} standards [${overallProgress}%] saved to Cloud DB)`);
   };
