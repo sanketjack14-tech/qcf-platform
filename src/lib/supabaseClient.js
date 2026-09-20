@@ -236,6 +236,35 @@ export async function saveInspectorReviewToDB(schoolId, statementId, rating, ver
   }
 }
 
+export async function saveAllInspectorReviewsToDB(schoolId, inspectorRatings = {}, inspectorVerdicts = {}, inspectorNotes = {}) {
+  if (!isSupabaseConfigured || !schoolId) return;
+  try {
+    const allStmtIds = new Set([
+      ...Object.keys(inspectorRatings),
+      ...Object.keys(inspectorVerdicts),
+      ...Object.keys(inspectorNotes)
+    ]);
+
+    const rows = Array.from(allStmtIds).map(stmtId => {
+      const payload = {
+        school_id: schoolId,
+        statement_id: stmtId,
+        updated_at: new Date().toISOString()
+      };
+      if (inspectorRatings[stmtId] !== undefined) payload.inspector_rating = inspectorRatings[stmtId];
+      if (inspectorVerdicts[stmtId] !== undefined) payload.inspector_verdict = inspectorVerdicts[stmtId];
+      if (inspectorNotes[stmtId] !== undefined) payload.inspector_notes = inspectorNotes[stmtId];
+      return payload;
+    });
+
+    if (rows.length > 0) {
+      await supabase.from('sef_ratings').upsert(rows, { onConflict: 'school_id,statement_id' });
+    }
+  } catch (err) {
+    console.error('Supabase saveAllInspectorReviewsToDB error:', err);
+  }
+}
+
 // ==========================================
 // 4. MULTI-MODAL EVIDENCE & STORAGE VAULT
 // ==========================================

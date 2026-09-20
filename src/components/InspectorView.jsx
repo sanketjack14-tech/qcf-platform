@@ -5,7 +5,7 @@ import {
   Star, Award, Download, Check, RefreshCw, FileCheck2, Printer 
 } from 'lucide-react';
 import { QCF_DOMAINS, RATING_SCALE } from '../data/qcfData';
-import { saveInspectorReviewToDB } from '../lib/supabaseClient';
+import { saveInspectorReviewToDB, saveAllInspectorReviewsToDB } from '../lib/supabaseClient';
 import EvaluationReportModal from './EvaluationReportModal';
 
 export default function InspectorView({ 
@@ -51,6 +51,20 @@ export default function InspectorView({
   const handleNotesChange = (stmtId, notes) => {
     setInspectorNotes(prev => ({ ...prev, [stmtId]: notes }));
     saveInspectorReviewToDB(selectedSchoolId, stmtId, inspectorRatings[stmtId], inspectorVerdicts[stmtId], notes);
+  };
+
+  const handleSaveInspectorVerification = async () => {
+    if (activeStatement && selectedSchool?.id) {
+      const stmtId = activeStatement.id;
+      const score = inspectorRatings[stmtId] || 4;
+      const verdict = inspectorVerdicts[stmtId] || 'Approved';
+      const notes = inspectorNotes[stmtId] || '';
+
+      await saveInspectorReviewToDB(selectedSchool.id, stmtId, score, verdict, notes);
+      await saveAllInspectorReviewsToDB(selectedSchool.id, inspectorRatings, inspectorVerdicts, inspectorNotes);
+
+      alert(`✅ Verified & Saved Inspector Evaluation for Standard ${activeStatement.code} to Cloud DB!`);
+    }
   };
 
   return (
@@ -386,7 +400,7 @@ export default function InspectorView({
                 </button>
 
                 <button
-                  onClick={() => alert(`Saved Inspector Evaluation for Standard ${activeStatement.code}!`)}
+                  onClick={handleSaveInspectorVerification}
                   className="px-5 py-2.5 bg-emerald-500 hover:bg-emerald-400 text-emerald-950 font-black text-xs rounded-xl shadow-md flex items-center gap-2 transition-colors cursor-pointer"
                 >
                   <Check className="w-4 h-4" /> Save Inspector Verification
