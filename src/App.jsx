@@ -6,6 +6,17 @@ import InspectorView from './components/InspectorView';
 import AdminView from './components/AdminView';
 import EvidenceModal from './components/EvidenceModal';
 import { DUBAI_SCHOOLS, QCF_STATEMENTS, sortStatements } from './data/qcfData';
+import { 
+  isSupabaseConfigured, 
+  getStatementsFromDB, 
+  getSchoolsFromDB, 
+  getRatingsFromDB, 
+  saveUserRatingToDB, 
+  getEvidenceFromDB, 
+  saveEvidenceToDB, 
+  deleteEvidenceFromDB,
+  saveSchoolToDB
+} from './lib/supabaseClient';
 
 export default function App() {
   // Role State: null (shows Main Gateway Landing) | 'school' | 'inspector' | 'admin'
@@ -13,7 +24,7 @@ export default function App() {
   const [schools, setSchools] = useState(DUBAI_SCHOOLS);
   const [activeSchool, setActiveSchool] = useState(DUBAI_SCHOOLS[0]);
 
-  // Master QCF Statements state (allows Admin to add, edit, or hide questions with localStorage persistence)
+  // Master QCF Statements state (allows Admin to add, edit, or hide questions with localStorage & DB persistence)
   const [statements, setStatements] = React.useState(() => {
     try {
       const saved = localStorage.getItem('qcf_statements');
@@ -111,6 +122,39 @@ export default function App() {
     }
   ]);
 
+  // Sync with Supabase Cloud Database on Component Mount
+  React.useEffect(() => {
+    if (!isSupabaseConfigured) return;
+
+    async function loadCloudData() {
+      // 1. Statements
+      const dbStmts = await getStatementsFromDB();
+      if (dbStmts) setStatements(dbStmts);
+
+      // 2. Schools
+      const dbSchools = await getSchoolsFromDB();
+      if (dbSchools) {
+        setSchools(dbSchools);
+        if (dbSchools.length > 0) setActiveSchool(dbSchools[0]);
+      }
+
+      // 3. Ratings
+      const dbRatings = await getRatingsFromDB(activeSchool.id);
+      if (dbRatings) {
+        if (Object.keys(dbRatings.userRatings).length > 0) setUserRatings(prev => ({ ...prev, ...dbRatings.userRatings }));
+        if (Object.keys(dbRatings.inspectorRatings).length > 0) setInspectorRatings(prev => ({ ...prev, ...dbRatings.inspectorRatings }));
+        if (Object.keys(dbRatings.inspectorVerdicts).length > 0) setInspectorVerdicts(prev => ({ ...prev, ...dbRatings.inspectorVerdicts }));
+        if (Object.keys(dbRatings.inspectorNotes).length > 0) setInspectorNotes(prev => ({ ...prev, ...dbRatings.inspectorNotes }));
+      }
+
+      // 4. Evidence
+      const dbEv = await getEvidenceFromDB(activeSchool.id);
+      if (dbEv && dbEv.length > 0) setEvidenceList(dbEv);
+    }
+
+    loadCloudData();
+  }, [activeSchool.id]);
+
   // Modal State for Evidence
   const [isEvidenceModalOpen, setIsEvidenceModalOpen] = useState(false);
   const [activeModalStatement, setActiveModalStatement] = useState(null);
@@ -127,20 +171,28 @@ export default function App() {
 
   const handleAddEvidence = (newEvidence) => {
     setEvidenceList(prev => [newEvidence, ...prev]);
+    saveEvidenceToDB(newEvidence);
   };
 
   const handleDeleteEvidence = (id) => {
     setEvidenceList(prev => prev.filter(e => e.id !== id));
+    deleteEvidenceFromDB(id);
   };
 
   const handleSubmitSEF = () => {
     setSchools(prev => prev.map(s => {
       if (s.id === activeSchool.id) {
-        return { ...s, status: 'Submitted', completionPercentage: 100 };
+        const updated = { ...s, status: 'Submitted', completionPercentage: 100 };
+        saveSchoolToDB(updated);
+        return updated;
       }
       return s;
     }));
-    setActiveSchool(prev => ({ ...prev, status: 'Submitted', completionPercentage: 100 }));
+    setActiveSchool(prev => {
+      const updated = { ...prev, status: 'Submitted', completionPercentage: 100 };
+      saveSchoolToDB(updated);
+      return updated;
+    });
     alert(`Success! SEF for ${activeSchool.name} has been submitted to KHDA Inspectors.`);
   };
 

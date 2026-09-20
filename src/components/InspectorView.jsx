@@ -5,6 +5,7 @@ import {
   Star, Award, Download, Check, RefreshCw, FileCheck2, Printer 
 } from 'lucide-react';
 import { QCF_DOMAINS, RATING_SCALE } from '../data/qcfData';
+import { saveInspectorReviewToDB } from '../lib/supabaseClient';
 import EvaluationReportModal from './EvaluationReportModal';
 
 export default function InspectorView({ 
@@ -37,14 +38,17 @@ export default function InspectorView({
 
   const handleInspectorRating = (stmtId, score) => {
     setInspectorRatings(prev => ({ ...prev, [stmtId]: score }));
+    saveInspectorReviewToDB(selectedSchoolId, stmtId, score, inspectorVerdicts[stmtId], inspectorNotes[stmtId]);
   };
 
   const handleVerdictChange = (stmtId, verdict) => {
     setInspectorVerdicts(prev => ({ ...prev, [stmtId]: verdict }));
+    saveInspectorReviewToDB(selectedSchoolId, stmtId, inspectorRatings[stmtId], verdict, inspectorNotes[stmtId]);
   };
 
   const handleNotesChange = (stmtId, notes) => {
     setInspectorNotes(prev => ({ ...prev, [stmtId]: notes }));
+    saveInspectorReviewToDB(selectedSchoolId, stmtId, inspectorRatings[stmtId], inspectorVerdicts[stmtId], notes);
   };
 
   return (

@@ -5,6 +5,7 @@ import {
   FileText, Globe, MessageSquare, AlertCircle, Save, Send 
 } from 'lucide-react';
 import { QCF_DOMAINS, RATING_SCALE } from '../data/qcfData';
+import { saveUserRatingToDB } from '../lib/supabaseClient';
 
 export default function SchoolView({ 
   school, 
@@ -49,6 +50,9 @@ export default function SchoolView({
       ...prev,
       [statementId]: level
     }));
+    if (school?.id) {
+      saveUserRatingToDB(school.id, statementId, level);
+    }
   };
 
   return (

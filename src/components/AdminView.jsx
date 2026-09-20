@@ -9,6 +9,7 @@ import {
   PieChart, Pie, Cell, Legend 
 } from 'recharts';
 import { INSPECTORS, QCF_DOMAINS, QCF_STATEMENTS, sortStatements } from '../data/qcfData';
+import { saveStatementToDB } from '../lib/supabaseClient';
 import EvaluationReportModal from './EvaluationReportModal';
 
 export default function AdminView({ 
@@ -146,6 +147,8 @@ export default function AdminView({
       return updated;
     });
 
+    saveStatementToDB(pendingEditStatement);
+
     setToastMessage(`✅ Standard Question "${pendingEditStatement.code}" updated and saved successfully!`);
     setTimeout(() => setToastMessage(null), 5000);
 
@@ -205,6 +208,8 @@ export default function AdminView({
       }
       return updated;
     });
+
+    saveStatementToDB(pendingAddStatement);
 
     setToastMessage(`🎉 Standard Question "${pendingAddStatement.code}" created and added to KHDA QCF Framework!`);
     setTimeout(() => setToastMessage(null), 5000);
