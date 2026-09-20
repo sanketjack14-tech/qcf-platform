@@ -77,83 +77,47 @@ export default function App() {
     'stmt-1_1': 'Strong evidence of leadership involvement. Voice note from Principal confirmed 4-year strategy.'
   });
 
-  // Pre-loaded multi-modal evidence items for rich demo
-  const [evidenceList, setEvidenceList] = useState([
-    {
-      id: 'ev-1',
-      statementId: 'stmt-1_1',
-      type: 'audio',
-      title: 'Interview Voice Note - Principal & Head of Careers',
-      url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3',
-      date: 'Sept 12, 2026',
-      note: 'Voice note discussing 4-year strategic career framework backing.'
-    },
-    {
-      id: 'ev-2',
-      statementId: 'stmt-1_1',
-      type: 'file',
-      title: 'School Board Resolution for Quality Careers 2026-2030.pdf',
-      url: 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf',
-      date: 'Sept 10, 2026'
-    },
-    {
-      id: 'ev-3',
-      statementId: 'stmt-2_1',
-      type: 'video',
-      title: 'Student University Fair & Career Guidance Session.mp4',
-      url: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4',
-      date: 'Sept 14, 2026'
-    },
-    {
-      id: 'ev-4',
-      statementId: 'stmt-4_1',
-      type: 'image',
-      title: 'Interactive Digital Careers Hub & Bulletin Board.png',
-      url: 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=800&auto=format&fit=crop&q=80',
-      date: 'Sept 11, 2026'
-    },
-    {
-      id: 'ev-5',
-      statementId: 'stmt-3_1a',
-      type: 'link',
-      title: 'Dubai Future Academy Student Internship Portal',
-      url: 'https://careers.dubaieducation2033.ae',
-      date: 'Sept 13, 2026'
-    }
-  ]);
+  // Multi-modal evidence items state
+  const [evidenceList, setEvidenceList] = useState([]);
 
-  // Sync with Supabase Cloud Database on Component Mount
+  // Sync with Supabase Cloud Database on Component Mount & activeSchool change
   React.useEffect(() => {
     if (!isSupabaseConfigured) return;
 
     async function loadCloudData() {
       // 1. Statements
       const dbStmts = await getStatementsFromDB();
-      if (dbStmts) setStatements(dbStmts);
+      if (dbStmts && dbStmts.length > 0) setStatements(dbStmts);
 
       // 2. Schools
       const dbSchools = await getSchoolsFromDB();
-      if (dbSchools) {
+      if (dbSchools && dbSchools.length > 0) {
         setSchools(dbSchools);
-        if (dbSchools.length > 0) setActiveSchool(dbSchools[0]);
       }
 
-      // 3. Ratings
-      const dbRatings = await getRatingsFromDB(activeSchool.id);
-      if (dbRatings) {
-        if (Object.keys(dbRatings.userRatings).length > 0) setUserRatings(prev => ({ ...prev, ...dbRatings.userRatings }));
-        if (Object.keys(dbRatings.inspectorRatings).length > 0) setInspectorRatings(prev => ({ ...prev, ...dbRatings.inspectorRatings }));
-        if (Object.keys(dbRatings.inspectorVerdicts).length > 0) setInspectorVerdicts(prev => ({ ...prev, ...dbRatings.inspectorVerdicts }));
-        if (Object.keys(dbRatings.inspectorNotes).length > 0) setInspectorNotes(prev => ({ ...prev, ...dbRatings.inspectorNotes }));
-      }
+      // 3. Ratings for Active School
+      if (activeSchool?.id) {
+        const dbRatings = await getRatingsFromDB(activeSchool.id);
+        if (dbRatings) {
+          setUserRatings(dbRatings.userRatings || {});
+          setInspectorRatings(dbRatings.inspectorRatings || {});
+          setInspectorVerdicts(dbRatings.inspectorVerdicts || {});
+          setInspectorNotes(dbRatings.inspectorNotes || {});
+        } else {
+          setUserRatings({});
+          setInspectorRatings({});
+          setInspectorVerdicts({});
+          setInspectorNotes({});
+        }
 
-      // 4. Evidence
-      const dbEv = await getEvidenceFromDB(activeSchool.id);
-      if (dbEv && dbEv.length > 0) setEvidenceList(dbEv);
+        // 4. Evidence for Active School
+        const dbEv = await getEvidenceFromDB(activeSchool.id);
+        setEvidenceList(dbEv || []);
+      }
     }
 
     loadCloudData();
-  }, [activeSchool.id]);
+  }, [activeSchool?.id]);
 
   // Modal State for Evidence
   const [isEvidenceModalOpen, setIsEvidenceModalOpen] = useState(false);
@@ -170,8 +134,9 @@ export default function App() {
   };
 
   const handleAddEvidence = (newEvidence) => {
-    setEvidenceList(prev => [newEvidence, ...prev]);
-    saveEvidenceToDB(newEvidence);
+    const evidenceWithSchool = { ...newEvidence, schoolId: activeSchool?.id || 'sch-101' };
+    setEvidenceList(prev => [evidenceWithSchool, ...prev]);
+    saveEvidenceToDB(evidenceWithSchool);
   };
 
   const handleDeleteEvidence = (id) => {
@@ -229,6 +194,8 @@ export default function App() {
         {currentRole === 'inspector' && (
           <InspectorView 
             schools={schools}
+            activeSchool={activeSchool}
+            setActiveSchool={setActiveSchool}
             statements={statements}
             evidenceList={evidenceList}
             userRatings={userRatings}

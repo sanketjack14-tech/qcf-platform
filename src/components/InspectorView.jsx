@@ -10,6 +10,8 @@ import EvaluationReportModal from './EvaluationReportModal';
 
 export default function InspectorView({ 
   schools, 
+  activeSchool,
+  setActiveSchool,
   statements, 
   evidenceList, 
   userRatings,
@@ -20,14 +22,14 @@ export default function InspectorView({
   inspectorNotes,
   setInspectorNotes
 }) {
-  const [selectedSchoolId, setSelectedSchoolId] = useState('sch-101');
+  const selectedSchoolId = activeSchool?.id || 'sch-101';
   const [selectedDomainId, setSelectedDomainId] = useState(1);
   const [selectedStmtId, setSelectedStmtId] = useState('stmt-1_1');
 
   // Report Modal state
   const [isReportModalOpen, setIsReportModalOpen] = useState(false);
 
-  const selectedSchool = schools.find(s => s.id === selectedSchoolId) || schools[0];
+  const selectedSchool = activeSchool || schools.find(s => s.id === selectedSchoolId) || schools[0];
   
   // Filter active (non-hidden) statements
   const activeStatements = statements.filter(s => !s.hidden);
@@ -83,7 +85,10 @@ export default function InspectorView({
             </label>
             <select
               value={selectedSchoolId}
-              onChange={(e) => setSelectedSchoolId(e.target.value)}
+              onChange={(e) => {
+                const sch = schools.find(s => s.id === e.target.value);
+                if (sch && setActiveSchool) setActiveSchool(sch);
+              }}
               className="bg-emerald-900 border border-emerald-700 text-white font-bold text-xs rounded-xl px-3 py-2 w-full focus:outline-none focus:ring-2 focus:ring-emerald-400 cursor-pointer"
             >
               {schools.map(s => (
