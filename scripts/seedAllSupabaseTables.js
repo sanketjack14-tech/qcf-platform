@@ -28,77 +28,57 @@ async function seedAll() {
   if (stmtErr) console.error('Statements Error:', stmtErr);
   else console.log('✓ 42 KHDA Standards synced successfully.');
 
-  // Extract all statement IDs in order
   const allStmtIds = stmtPayloads.map(s => s.id);
 
-  // 2. Generate SEF Ratings & Inspector Reviews for all 5 schools to match target percentages
-  // Target counts out of 42:
-  // sch-101 (Dubai Int Academy): 37 statements rated = 88%
-  // sch-102 (GEMS Wellington): 42 statements rated = 100%
-  // sch-103 (Repton School): 27 statements rated = 64%
-  // sch-104 (Emirates Int): 18 statements rated = 43%
-  // sch-105 (Dubai British): 8 statements rated = 19%
+  // 2. Clear all ratings for other schools, keep ONLY sch-101 (37 rated standards = 88%)
+  console.log('2. Resetting ratings and keeping ONLY sch-101 (Dubai International Academy)...');
+  await supabase.from('sef_ratings').delete().neq('school_id', 'sch-101');
 
-  const schoolRatingsConfig = [
-    { schoolId: 'sch-101', ratedCount: 37, targetPercentage: 88, status: 'Under Inspection' },
-    { schoolId: 'sch-102', ratedCount: 42, targetPercentage: 100, status: 'Submitted' },
-    { schoolId: 'sch-103', ratedCount: 27, targetPercentage: 64, status: 'In Progress' },
-    { schoolId: 'sch-104', ratedCount: 18, targetPercentage: 43, status: 'Draft' },
-    { schoolId: 'sch-105', ratedCount: 8, targetPercentage: 19, status: 'Draft' }
-  ];
+  const sch101Ratings = [];
+  const idsToRate = allStmtIds.slice(0, 37);
+  idsToRate.forEach((stmtId, index) => {
+    const userRating = (index % 3 === 0) ? 5 : ((index % 2 === 0) ? 4 : 3);
+    const inspectorRating = (index % 4 === 0) ? userRating - 1 : userRating;
+    const verdict = (inspectorRating >= userRating) ? 'Approved' : 'Needs Revision';
+    const notes = verdict === 'Approved' 
+      ? `Verified by KHDA Auditor. Standard ${stmtId} meets Quality Careers criteria.`
+      : `Requires additional documentation for Standard ${stmtId}.`;
 
-  const allRatingsPayloads = [];
-
-  schoolRatingsConfig.forEach(cfg => {
-    const idsToRate = allStmtIds.slice(0, cfg.ratedCount);
-    idsToRate.forEach((stmtId, index) => {
-      // Generate realistic scores between Level 3, 4, 5
-      const userRating = (index % 3 === 0) ? 5 : ((index % 2 === 0) ? 4 : 3);
-      const inspectorRating = (index % 4 === 0) ? userRating - 1 : userRating;
-      const verdict = (inspectorRating >= userRating) ? 'Approved' : 'Needs Revision';
-      const notes = verdict === 'Approved' 
-        ? `Verified by KHDA Auditor. Standard ${stmtId} meets Quality Careers criteria.`
-        : `Requires additional documentation for Standard ${stmtId}.`;
-
-      allRatingsPayloads.push({
-        school_id: cfg.schoolId,
-        statement_id: stmtId,
-        user_rating: userRating,
-        inspector_rating: inspectorRating,
-        inspector_verdict: verdict,
-        inspector_notes: notes,
-        updated_at: new Date().toISOString()
-      });
+    sch101Ratings.push({
+      school_id: 'sch-101',
+      statement_id: stmtId,
+      user_rating: userRating,
+      inspector_rating: inspectorRating,
+      inspector_verdict: verdict,
+      inspector_notes: notes,
+      updated_at: new Date().toISOString()
     });
   });
 
-  console.log(`2. Seeding ${allRatingsPayloads.length} SEF Ratings across all 5 schools...`);
-  const { error: ratErr } = await supabase.from('sef_ratings').upsert(allRatingsPayloads, { onConflict: 'school_id,statement_id' });
+  const { error: ratErr } = await supabase.from('sef_ratings').upsert(sch101Ratings, { onConflict: 'school_id,statement_id' });
   if (ratErr) console.error('Ratings Error:', ratErr);
-  else console.log('✓ SEF Ratings & Inspector Reviews synced successfully.');
+  else console.log(`✓ 37 SEF Ratings for Dubai International Academy synced. All other schools cleared.`);
 
-  // 3. Seed Schools Table with aligned completion percentages
+  // 3. Seed Schools Table
   console.log('3. Seeding Schools Table...');
-  const schoolPayloads = DUBAI_SCHOOLS.map(s => {
-    const cfg = schoolRatingsConfig.find(c => c.schoolId === s.id);
-    const actualPct = cfg ? Math.round((cfg.ratedCount / allStmtIds.length) * 100) : s.completionPercentage;
-    return {
-      id: s.id,
-      name: s.name,
-      curriculum: s.curriculum,
-      khda_rating: s.khdaRating,
-      district: s.district,
-      completion_percentage: actualPct,
-      status: s.status || 'Draft',
-      assigned_inspector: s.assignedInspector || 'Dr. Sarah Al Mansoori'
-    };
-  });
+  const schoolPayloads = DUBAI_SCHOOLS.map(s => ({
+    id: s.id,
+    name: s.name,
+    curriculum: s.curriculum,
+    khda_rating: s.khdaRating,
+    district: s.district,
+    completion_percentage: s.id === 'sch-101' ? 88 : 0,
+    status: s.id === 'sch-101' ? 'Under Inspection' : 'Draft',
+    assigned_inspector: s.assignedInspector || 'Dr. Sarah Al Mansoori'
+  }));
   const { error: schErr } = await supabase.from('schools').upsert(schoolPayloads);
   if (schErr) console.error('Schools Error:', schErr);
-  else console.log('✓ Schools synced successfully with calculated completion percentages.');
+  else console.log('✓ Schools synced: sch-101 = 88%, all other schools = 0% / Draft.');
 
-  // 4. Seed Multi-Modal Evidence Items for sch-101 and sch-102
-  console.log('4. Seeding Evidence Items Table...');
+  // 4. Seed Multi-Modal Evidence Items ONLY for sch-101
+  console.log('4. Seeding Evidence Items Table for sch-101...');
+  await supabase.from('evidence_items').delete().neq('school_id', 'sch-101');
+
   const initialEvidence = [
     {
       id: 'ev-1',
@@ -150,9 +130,9 @@ async function seedAll() {
 
   const { error: evErr } = await supabase.from('evidence_items').upsert(initialEvidence);
   if (evErr) console.error('Evidence Error:', evErr);
-  else console.log('✓ Multi-Modal Evidence Items synced successfully.');
+  else console.log('✓ Multi-Modal Evidence Items for sch-101 synced.');
 
-  console.log('🎉 ALL TABLES IN SUPABASE POSTGRESQL ARE NOW 100% ALIGNED WITH FRONTEND!');
+  console.log('🎉 ALL NON-SCH-101 SUBMISSIONS & INSPECTOR EVALUATIONS CLEARED SUCCESSFULLY!');
 }
 
 seedAll();
