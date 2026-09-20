@@ -11,17 +11,62 @@ export const supabase = isSupabaseConfigured
   : null;
 
 // ==========================================
+// SEED INITIAL DATABASE DATA IF EMPTY
+// ==========================================
+export async function seedInitialDatabaseIfEmpty() {
+  if (!isSupabaseConfigured) return;
+
+  try {
+    // 1. Seed Statements
+    const { data: stmts, error: stmtErr } = await supabase.from('qcf_statements').select('id').limit(1);
+    if (!stmtErr && (!stmts || stmts.length === 0)) {
+      console.log('Supabase: Seeding initial 42 KHDA standards into PostgreSQL DB...');
+      const stmtPayloads = QCF_STATEMENTS.map(s => ({
+        id: s.id,
+        code: s.code,
+        domain_number: s.domainNumber,
+        statement: s.statement,
+        default_rating: s.defaultRating || 3,
+        evidence_count: s.evidenceCount || 0,
+        hidden: Boolean(s.hidden)
+      }));
+      await supabase.from('qcf_statements').upsert(stmtPayloads);
+    }
+
+    // 2. Seed Schools
+    const { data: schs, error: schErr } = await supabase.from('schools').select('id').limit(1);
+    if (!schErr && (!schs || schs.length === 0)) {
+      console.log('Supabase: Seeding initial Dubai schools directory into PostgreSQL DB...');
+      const schoolPayloads = DUBAI_SCHOOLS.map(s => ({
+        id: s.id,
+        name: s.name,
+        curriculum: s.curriculum,
+        khda_rating: s.khdaRating,
+        district: s.district,
+        completion_percentage: s.completionPercentage || 0,
+        status: s.status || 'Draft',
+        assigned_inspector: s.assignedInspector || 'Dr. Sarah Al Mansoori'
+      }));
+      await supabase.from('schools').upsert(schoolPayloads);
+    }
+  } catch (e) {
+    console.error('Supabase seedInitialDatabaseIfEmpty exception:', e);
+  }
+}
+
+// ==========================================
 // 1. STATEMENTS (42 KHDA STANDARDS)
 // ==========================================
 export async function getStatementsFromDB() {
   if (!isSupabaseConfigured) return null;
   try {
+    await seedInitialDatabaseIfEmpty();
+
     const { data, error } = await supabase
       .from('qcf_statements')
       .select('*');
 
     if (error || !data || data.length === 0) {
-      console.warn('Supabase: Statements empty or table not seeded yet. Falling back to default data.', error);
       return null;
     }
 
