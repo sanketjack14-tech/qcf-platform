@@ -124,13 +124,13 @@ export default function EvaluationReportModal({
 
             <div className="text-right">
               <div className="text-xs font-bold text-emerald-800 uppercase tracking-widest">
-                Knowledge & Human Development Authority (KHDA)
+                Quality Careers Framework Directorate
               </div>
               <h1 className="text-2xl font-black text-[#16362B] font-heading mt-1">
                 Quality Careers Framework Report
               </h1>
               <div className="text-xs text-gray-500 mt-0.5">
-                Official Evaluation & Audit Certificate • Ref ID: <span className="font-bold text-gray-800">QCF-2026-DXB-8842</span>
+                Official Evaluation & Audit Certificate • Ref ID: <span className="font-bold text-gray-800">QCF-2026-REG-8842</span>
               </div>
             </div>
           </div>
@@ -145,12 +145,12 @@ export default function EvaluationReportModal({
             <div>
               <div className="text-[10px] font-bold text-emerald-800 uppercase tracking-wider">Curriculum</div>
               <div className="text-xs font-extrabold text-gray-900 mt-0.5">{school.curriculum}</div>
-              <div className="text-[10px] text-gray-500">KHDA: {school.khdaRating}</div>
+              <div className="text-[10px] text-gray-500">Status: {school.status}</div>
             </div>
             <div>
-              <div className="text-[10px] font-bold text-emerald-800 uppercase tracking-wider">Lead Inspector</div>
-              <div className="text-xs font-extrabold text-gray-900 mt-0.5">Dr. Sarah Al Mansoori</div>
-              <div className="text-[10px] text-gray-500">Senior KHDA Auditor</div>
+              <div className="text-[10px] font-bold text-emerald-800 uppercase tracking-wider">Assigned QCF Partners</div>
+              <div className="text-xs font-extrabold text-gray-900 mt-0.5">Kavita and Magda</div>
+              <div className="text-[10px] text-gray-500">Quality Assurance Division</div>
             </div>
             <div>
               <div className="text-[10px] font-bold text-emerald-800 uppercase tracking-wider">Audit Date</div>

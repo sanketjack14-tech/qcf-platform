@@ -1,6 +1,6 @@
 import React from 'react';
 import QCFLogo from './QCFLogo';
-import { LogOut, School, ShieldCheck, LayoutDashboard, UserCheck, Bell } from 'lucide-react';
+import { LogOut, School, ShieldCheck, LayoutDashboard } from 'lucide-react';
 
 export default function PortalHeader({ currentRole, onLogout, activeSchool, setActiveSchool, schools }) {
   return (
@@ -24,7 +24,7 @@ export default function PortalHeader({ currentRole, onLogout, activeSchool, setA
               {currentRole === 'inspector' && (
                 <>
                   <ShieldCheck className="w-3.5 h-3.5 text-blue-700" />
-                  <span>KHDA Inspector Verification Portal</span>
+                  <span>QCF Partner Verification Portal</span>
                 </>
               )}
               {currentRole === 'admin' && (
@@ -37,8 +37,8 @@ export default function PortalHeader({ currentRole, onLogout, activeSchool, setA
 
             <div className="text-[11px] text-gray-500 font-medium">
               {currentRole === 'school' && (activeSchool?.name || 'Dubai International Academy')}
-              {currentRole === 'inspector' && 'Inspector: Dr. Sarah Al Mansoori (KHDA Quality Auditor)'}
-              {currentRole === 'admin' && 'Dubai Education 2033 Analytics & Framework Manager'}
+              {currentRole === 'inspector' && 'Assigned QCF Partners: Kavita and Magda'}
+              {currentRole === 'admin' && 'Quality Careers Framework Analytics & Governance Manager'}
             </div>
           </div>
         </div>

@@ -89,7 +89,7 @@ export default function SchoolView({
           <div>
             <div className="flex items-center gap-3">
               <span className="bg-emerald-700/80 text-emerald-100 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider">
-                Dubai School SEF Submission
+                School Evaluation Portal
               </span>
               <span className="bg-amber-500/20 text-amber-300 border border-amber-500/40 px-3 py-1 rounded-full text-xs font-semibold">
                 Status: {school.status}
@@ -99,7 +99,10 @@ export default function SchoolView({
               {school.name}
             </h1>
             <p className="text-emerald-200 text-xs sm:text-sm mt-1 max-w-2xl">
-              Curriculum: <span className="font-semibold text-white">{school.curriculum}</span> • KHDA Rating: <span className="font-semibold text-white">{school.khdaRating}</span> • District: <span className="text-white">{school.district}</span>
+              Curriculum: <span className="font-semibold text-white">{school.curriculum}</span> • District: <span className="text-white">{school.district}</span>
+            </p>
+            <p className="text-emerald-300 text-xs font-bold mt-2 flex items-center gap-1.5 bg-emerald-950/60 border border-emerald-800/80 px-3 py-1 rounded-lg w-fit">
+              <span>The QCF partners assigned to your school are Kavita and Magda.</span>
             </p>
           </div>
 
@@ -229,7 +232,7 @@ export default function SchoolView({
                         className="inline-flex items-center gap-1 text-xs font-semibold text-emerald-700 hover:text-emerald-900 mt-1.5 transition-colors cursor-pointer"
                       >
                         <Info className="w-3.5 h-3.5" />
-                        <span>{isGuidanceOpen ? 'Hide KHDA Guidance & Rubric' : 'View KHDA Evaluation Rubric'}</span>
+                        <span>{isGuidanceOpen ? 'Hide QCF Guidance & Rubric' : 'View QCF Evaluation Rubric'}</span>
                       </button>
                     </div>
                   </div>
@@ -367,7 +370,7 @@ export default function SchoolView({
               className="px-6 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl flex items-center gap-2 transition-colors shadow-md animate-pulse cursor-pointer"
             >
               <Send className="w-4 h-4" />
-              <span>Submit SEF to Inspector</span>
+              <span>Submit SEF to QCF Partners</span>
             </button>
           )}
         </div>

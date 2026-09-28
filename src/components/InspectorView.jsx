@@ -79,14 +79,14 @@ export default function InspectorView({
           <div>
             <div className="flex items-center gap-2">
               <span className="bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 text-[10px] font-bold px-2.5 py-0.5 rounded-full uppercase tracking-wider">
-                KHDA Quality Careers Auditor
+                QCF Partner Verification
               </span>
             </div>
             <h1 className="text-xl sm:text-2xl font-extrabold text-white mt-1 font-heading">
-              Inspector Verification Workspace
+              QCF Partner Verification Workspace
             </h1>
             <p className="text-xs text-emerald-200 mt-0.5">
-              Inspector: <span className="font-semibold text-white">Dr. Sarah Al Mansoori</span> • KHDA Quality Assurance Division
+              Assigned QCF Partners: <span className="font-semibold text-white">Kavita and Magda</span> • Quality Assurance Division
             </p>
           </div>
         </div>
@@ -318,17 +318,17 @@ export default function InspectorView({
               <div className="flex items-center justify-between border-b border-emerald-800 pb-3">
                 <h3 className="text-sm font-extrabold text-white flex items-center gap-2 font-heading">
                   <ShieldCheck className="w-4 h-4 text-emerald-400" />
-                  <span>Inspector Verification & Official Scoring</span>
+                  <span>QCF Partner Verification & Official Scoring</span>
                 </h3>
                 <span className="text-xs text-emerald-300 font-semibold">
-                  KHDA Audit Form
+                  QCF Audit Form
                 </span>
               </div>
 
               {/* Inspector Rating Selection */}
               <div>
                 <label className="block text-xs font-bold text-emerald-200 uppercase tracking-wider mb-2">
-                  Inspector Validated Rating Level (1 - 5)
+                  QCF Partner Validated Rating Level (1 - 5)
                 </label>
                 <div className="flex flex-wrap gap-2">
                   {[1, 2, 3, 4, 5].map(lvl => {
@@ -354,7 +354,7 @@ export default function InspectorView({
               {/* Verification Verdict Selector */}
               <div>
                 <label className="block text-xs font-bold text-emerald-200 uppercase tracking-wider mb-2">
-                  Inspection Verdict Status
+                  QCF Partner Verification Verdict
                 </label>
                 <div className="flex flex-wrap gap-3">
                   {['Approved', 'Needs Revision', 'Flagged for Onsite Visit'].map(v => {
@@ -379,13 +379,13 @@ export default function InspectorView({
               {/* Inspector Notes & Recommendations */}
               <div>
                 <label className="block text-xs font-bold text-emerald-200 uppercase tracking-wider mb-1.5">
-                  Inspector Findings & Guidance Recommendations
+                  QCF Partner Audit Findings & Guidance Recommendations
                 </label>
                 <textarea
                   rows={3}
                   value={inspectorNotes[activeStatement.id] || ''}
                   onChange={(e) => handleNotesChange(activeStatement.id, e.target.value)}
-                  placeholder="Enter official inspector audit observations, evidence verification notes, or requested revisions..."
+                  placeholder="Enter official QCF partner audit observations, evidence verification notes, or requested revisions..."
                   className="w-full text-xs p-3 rounded-xl border border-emerald-700 bg-emerald-950 text-white placeholder-emerald-400/60 focus:outline-none focus:ring-2 focus:ring-emerald-400"
                 ></textarea>
               </div>
@@ -403,7 +403,7 @@ export default function InspectorView({
                   onClick={handleSaveInspectorVerification}
                   className="px-5 py-2.5 bg-emerald-500 hover:bg-emerald-400 text-emerald-950 font-black text-xs rounded-xl shadow-md flex items-center gap-2 transition-colors cursor-pointer"
                 >
-                  <Check className="w-4 h-4" /> Save Inspector Verification
+                  <Check className="w-4 h-4" /> Save QCF Partner Verification
                 </button>
               </div>
             </div>

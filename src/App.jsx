@@ -159,7 +159,7 @@ export default function App() {
       saveSchoolToDB(updated);
       return updated;
     });
-    alert(`Success! SEF for ${activeSchool.name} has been submitted to KHDA Inspectors.`);
+    alert(`Success! SEF for ${activeSchool.name} has been submitted to QCF Partners.`);
   };
 
   // If no role is selected, show the Role Selection Landing Page
@@ -238,10 +238,10 @@ export default function App() {
       <footer className="mt-auto bg-[#16362B] text-emerald-200 border-t border-emerald-800 py-6 text-xs text-center print:hidden">
         <div className="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-4">
           <div>
-            <span className="font-bold text-white">Quality Careers Framework (QCF)</span> — Dubai Education 2033 Standards Platform
+            <span className="font-bold text-white">Quality Careers Framework (QCF)</span> — School Evaluation Platform
           </div>
           <div className="text-emerald-400 font-medium">
-            Beta Edition 2026 © KHDA & QCF Governing Directorate
+            Beta Edition 2026 © Quality Careers Framework Directorate
           </div>
         </div>
       </footer>
