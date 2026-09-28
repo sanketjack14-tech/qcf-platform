@@ -15,12 +15,12 @@ export default function QCFLogo({ className = "w-12 h-12", size = "normal", vari
 
       {showText && (
         <div>
-          <div className={`font-black tracking-tight leading-none font-heading ${titleTextColor} ${size === 'large' ? 'text-xl' : 'text-base'}`}>
-            QUALITY CAREERS
+          <div className={`font-black tracking-tight leading-snug font-heading ${titleTextColor} ${size === 'large' ? 'text-lg sm:text-xl' : 'text-base'}`}>
+            Quality Careers Framework
           </div>
-          <div className={`font-bold tracking-wider uppercase text-[10px] ${subtitleTextColor} mt-1 flex items-center gap-1.5`}>
+          <div className={`font-bold tracking-wider uppercase text-[10px] ${subtitleTextColor} mt-0.5 flex items-center gap-1.5`}>
             <span className="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
-            FRAMEWORK (QCF)
+            (QCF) Evaluation Platform
           </div>
         </div>
       )}
