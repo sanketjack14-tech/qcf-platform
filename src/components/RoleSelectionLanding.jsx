@@ -127,19 +127,19 @@ export default function RoleSelectionLanding({ onSelectRole }) {
               <div className="space-y-1 mb-6 text-left relative z-10">
                 <div className="flex items-center justify-between">
                   <span className="text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-full bg-emerald-100 text-emerald-900 inline-block">
-                    {activeTab === 'school' ? 'School Portal Workspace' : 'QCF Partner Workspace'}
+                    {activeTab === 'school' ? 'School Workspace' : 'QCF Partner Workspace'}
                   </span>
                   <span className="text-xs text-gray-400 font-semibold">Secure SSL</span>
                 </div>
                 
                 <h2 className="text-2xl font-black text-gray-900 font-heading mt-2">
-                  {activeTab === 'school' ? 'School Portal Sign-In' : 'QCF Partner Sign-In'}
+                  {activeTab === 'school' ? 'Sign-in for Schools' : 'Sign-in for QCF Partners'}
                 </h2>
                 
                 <p className="text-xs text-gray-600 font-medium">
                   {activeTab === 'school' 
-                    ? 'Sign-in with your institutional credentials to evaluate your school.'
-                    : 'Sign-in as an assigned QCF Partner or Quality Assurance Evaluator.'
+                    ? 'Sign-in with your institutional credentials.'
+                    : 'Sign-in with your QCF partner credentials.'
                   }
                 </p>
               </div>
@@ -200,7 +200,7 @@ export default function RoleSelectionLanding({ onSelectRole }) {
                   disabled={!agreedToTerms}
                   className="w-full py-3.5 bg-[#16362B] hover:bg-emerald-700 disabled:opacity-50 text-white font-extrabold text-xs rounded-xl flex items-center justify-center gap-2 transition-all shadow-lg cursor-pointer mt-2"
                 >
-                  <span>{activeTab === 'school' ? 'Sign In to School Portal' : 'Sign In as QCF Partner'}</span>
+                  <span>Sign-in</span>
                   <ArrowRight className="w-4 h-4" />
                 </button>
               </form>
