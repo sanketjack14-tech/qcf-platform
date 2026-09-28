@@ -86,7 +86,7 @@ export default function InspectorView({
               QCF Partner Verification Workspace
             </h1>
             <p className="text-xs text-emerald-200 mt-0.5">
-              Assigned QCF Partners: <span className="font-semibold text-white">Kavita and Magda</span> • Quality Assurance Division
+              Assigned QCF Partners: <span className="font-semibold text-white">Kavita and Magda</span>
             </p>
           </div>
         </div>
@@ -328,23 +328,23 @@ export default function InspectorView({
               {/* Inspector Rating Selection */}
               <div>
                 <label className="block text-xs font-bold text-emerald-200 uppercase tracking-wider mb-2">
-                  QCF Partner Validated Rating Level (1 - 5)
+                  QCF Partner Validated Rating
                 </label>
                 <div className="flex flex-wrap gap-2">
-                  {[1, 2, 3, 4, 5].map(lvl => {
-                    const active = (inspectorRatings[activeStatement.id] || 4) === lvl;
+                  {RATING_SCALE.map(r => {
+                    const active = (inspectorRatings[activeStatement.id] || 4) === r.level;
                     return (
                       <button
-                        key={lvl}
-                        onClick={() => handleInspectorRating(activeStatement.id, lvl)}
-                        className={`px-4 py-2.5 rounded-xl font-extrabold text-xs transition-all flex items-center gap-1.5 cursor-pointer ${
+                        key={r.level}
+                        onClick={() => handleInspectorRating(activeStatement.id, r.level)}
+                        className={`px-3.5 py-2.5 rounded-xl font-extrabold text-xs transition-all flex items-center gap-1.5 cursor-pointer ${
                           active
                             ? 'bg-emerald-500 text-white shadow-md ring-2 ring-emerald-300'
                             : 'bg-emerald-900/80 text-emerald-200 hover:bg-emerald-800'
                         }`}
                       >
                         <Star className="w-3.5 h-3.5 fill-current" />
-                        <span>Level {lvl}</span>
+                        <span>{r.title}</span>
                       </button>
                     );
                   })}

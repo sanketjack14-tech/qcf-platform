@@ -65,10 +65,10 @@ export default function PortalHeader({ currentRole, onLogout, activeSchool, setA
           <button
             onClick={onLogout}
             className="px-3.5 py-2 bg-gray-100 hover:bg-emerald-50 text-gray-700 hover:text-emerald-950 font-bold text-xs rounded-xl border border-gray-200 hover:border-emerald-300 flex items-center gap-2 transition-all cursor-pointer"
-            title="Return to Main Portal Selection Gateway"
+            title="Sign out of portal"
           >
             <LogOut className="w-3.5 h-3.5 text-gray-500" />
-            <span className="hidden sm:inline">Switch Portal</span>
+            <span className="hidden sm:inline">Sign Out</span>
           </button>
         </div>
 

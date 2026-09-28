@@ -150,7 +150,7 @@ export default function EvaluationReportModal({
             <div>
               <div className="text-[10px] font-bold text-emerald-800 uppercase tracking-wider">Assigned QCF Partners</div>
               <div className="text-xs font-extrabold text-gray-900 mt-0.5">Kavita and Magda</div>
-              <div className="text-[10px] text-gray-500">Quality Assurance Division</div>
+              <div className="text-[10px] text-gray-500">Evaluation Directorate</div>
             </div>
             <div>
               <div className="text-[10px] font-bold text-emerald-800 uppercase tracking-wider">Audit Date</div>

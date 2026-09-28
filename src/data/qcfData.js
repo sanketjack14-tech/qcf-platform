@@ -56,43 +56,48 @@ export const QCF_DOMAINS = [
 export const RATING_SCALE = [
   {
     level: 1,
-    title: 'Not Evidenced',
-    label: 'Is not able to be evidenced in documentation or for the visit',
-    color: '#EF4444',
-    bg: '#FEF2F2',
-    border: '#FCA5A5'
+    title: 'Evidence unavailable',
+    label: 'Evidence is currently unavailable or unevidenced',
+    iconName: 'FileX',
+    color: '#6B7280',
+    bg: '#F3F4F6',
+    border: '#D1D5DB'
   },
   {
     level: 2,
     title: 'Developing',
-    label: 'Showing development',
-    color: '#F59E0B',
-    bg: '#FFFBEB',
-    border: '#FCD34D'
+    label: 'Developing foundation and active progress underway',
+    iconName: 'Sprout',
+    color: '#16A34A',
+    bg: '#F0FDF4',
+    border: '#86EFAC'
   },
   {
     level: 3,
-    title: 'In Place',
-    label: 'Standard is in place',
-    color: '#3B82F6',
+    title: 'Good',
+    label: 'Good quality standard established with consistent practices',
+    iconName: 'ThumbsUp',
+    color: '#0D9488',
+    bg: '#CCFBF1',
+    border: '#5EEAD4'
+  },
+  {
+    level: 4,
+    title: 'Excellent',
+    label: 'Excellent impact across student academic & career readiness',
+    iconName: 'Sparkles',
+    color: '#2563EB',
     bg: '#EFF6FF',
     border: '#93C5FD'
   },
   {
-    level: 4,
-    title: 'Good / Excellent',
-    label: 'Excellent evidence of this standard was in place',
-    color: '#10B981',
-    bg: '#ECFDF5',
-    border: '#6EE7B7'
-  },
-  {
     level: 5,
     title: 'Exemplary',
-    label: 'Evidence of this standard was exemplary',
-    color: '#059669',
-    bg: '#D1FAE5',
-    border: '#34D399'
+    label: 'Exemplary benchmark-setting leadership and career outcomes',
+    iconName: 'Trophy',
+    color: '#7C3AED',
+    bg: '#F5F3FF',
+    border: '#DDD6FE'
   }
 ];
 

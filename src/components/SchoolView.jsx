@@ -2,7 +2,8 @@ import React, { useState } from 'react';
 import { 
   Crown, BookOpen, Users, Sparkles, TrendingUp, ChevronRight, ChevronLeft, 
   CheckCircle2, Plus, Info, FileCheck, Mic, Video, Image as ImageIcon, 
-  FileText, Globe, MessageSquare, AlertCircle, Save, Send 
+  FileText, Globe, MessageSquare, AlertCircle, Save, Send,
+  FileX, Sprout, ThumbsUp, Trophy
 } from 'lucide-react';
 import { QCF_DOMAINS, RATING_SCALE } from '../data/qcfData';
 import { saveUserRatingToDB, saveSchoolToDB, saveAllUserRatingsToDB } from '../lib/supabaseClient';
@@ -89,7 +90,7 @@ export default function SchoolView({
           <div>
             <div className="flex items-center gap-3">
               <span className="bg-emerald-700/80 text-emerald-100 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider">
-                School Evaluation Portal
+                School Workspace
               </span>
               <span className="bg-amber-500/20 text-amber-300 border border-amber-500/40 px-3 py-1 rounded-full text-xs font-semibold">
                 Status: {school.status}
@@ -171,7 +172,7 @@ export default function SchoolView({
                 </div>
                 <div className="mt-3">
                   <div className="text-[10px] font-bold opacity-75 uppercase tracking-wider">
-                    {domain.code} • Step {domain.id}
+                    Domain {domain.id}
                   </div>
                   <div className="text-xs font-bold leading-tight mt-0.5 line-clamp-1">
                     {domain.title}
@@ -232,7 +233,7 @@ export default function SchoolView({
                         className="inline-flex items-center gap-1 text-xs font-semibold text-emerald-700 hover:text-emerald-900 mt-1.5 transition-colors cursor-pointer"
                       >
                         <Info className="w-3.5 h-3.5" />
-                        <span>{isGuidanceOpen ? 'Hide QCF Guidance & Rubric' : 'View QCF Evaluation Rubric'}</span>
+                        <span>{isGuidanceOpen ? 'Hide Guide' : 'View Guide'}</span>
                       </button>
                     </div>
                   </div>
@@ -244,7 +245,7 @@ export default function SchoolView({
                   )}
                 </div>
 
-                {/* KHDA Guidance Dropdown Box */}
+                {/* Guidance Dropdown Box */}
                 {isGuidanceOpen && (
                   <div className="bg-emerald-50/70 border border-emerald-200 rounded-xl p-4 text-xs text-emerald-950 space-y-2 animate-in fade-in duration-150">
                     <div className="font-bold text-emerald-900 flex items-center gap-1.5">
@@ -268,6 +269,12 @@ export default function SchoolView({
                   <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-5 gap-2">
                     {RATING_SCALE.map(r => {
                       const isSelected = currentRating === r.level;
+                      const IconComponent = r.iconName === 'FileX' ? FileX
+                        : r.iconName === 'Sprout' ? Sprout
+                        : r.iconName === 'ThumbsUp' ? ThumbsUp
+                        : r.iconName === 'Sparkles' ? Sparkles
+                        : Trophy;
+
                       return (
                         <button
                           key={r.level}
@@ -280,10 +287,11 @@ export default function SchoolView({
                           }`}
                         >
                           <div className="flex items-center justify-between mb-1">
-                            <span className={`text-[10px] px-2 py-0.5 rounded-md font-extrabold ${
+                            <span className={`text-[10px] px-2 py-0.5 rounded-md font-extrabold flex items-center gap-1 ${
                               isSelected ? 'bg-emerald-900 text-white' : 'bg-gray-200 text-gray-800'
                             }`}>
-                              Level {r.level}
+                              <IconComponent className="w-3 h-3" />
+                              <span>{r.title}</span>
                             </span>
                             {isSelected && <CheckCircle2 className="w-4 h-4 text-emerald-300" />}
                           </div>
