@@ -153,14 +153,14 @@ export default function App() {
   const handleSubmitSEF = () => {
     setSchools(prev => prev.map(s => {
       if (s.id === activeSchool.id) {
-        const updated = { ...s, status: 'Submitted', completionPercentage: 100 };
+        const updated = { ...s, status: 'Submitted to QCF', completionPercentage: 100 };
         saveSchoolToDB(updated);
         return updated;
       }
       return s;
     }));
     setActiveSchool(prev => {
-      const updated = { ...prev, status: 'Submitted', completionPercentage: 100 };
+      const updated = { ...prev, status: 'Submitted to QCF', completionPercentage: 100 };
       saveSchoolToDB(updated);
       return updated;
     });

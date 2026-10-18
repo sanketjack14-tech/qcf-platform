@@ -449,7 +449,7 @@ export const DUBAI_SCHOOLS = [
     district: 'Al Barsha 1, Dubai',
     studentsCount: 2450,
     completionPercentage: 88,
-    status: 'Under Inspection',
+    status: 'QCF Partners reviewing',
     assignedInspector: 'Dr. Sarah Al Mansoori',
     lastUpdated: 'Sept 14, 2026'
   },
@@ -461,7 +461,7 @@ export const DUBAI_SCHOOLS = [
     district: 'Al Sufouh, Dubai',
     studentsCount: 2800,
     completionPercentage: 0,
-    status: 'Draft',
+    status: 'Self-evaluating',
     assignedInspector: 'Alex Harrison',
     lastUpdated: 'Sept 12, 2026'
   },
@@ -473,7 +473,7 @@ export const DUBAI_SCHOOLS = [
     district: 'Nadd Al Sheba, Dubai',
     studentsCount: 2100,
     completionPercentage: 0,
-    status: 'Draft',
+    status: 'Self-evaluating',
     assignedInspector: 'Magda Kozlowska',
     lastUpdated: 'Sept 10, 2026'
   },
@@ -485,7 +485,7 @@ export const DUBAI_SCHOOLS = [
     district: 'Jumeirah 3, Dubai',
     studentsCount: 1950,
     completionPercentage: 0,
-    status: 'Draft',
+    status: 'Self-evaluating',
     assignedInspector: 'Patricia Villard',
     lastUpdated: 'Sept 08, 2026'
   },
@@ -497,7 +497,7 @@ export const DUBAI_SCHOOLS = [
     district: 'Jumeirah Park, Dubai',
     studentsCount: 1600,
     completionPercentage: 0,
-    status: 'Draft',
+    status: 'Self-evaluating',
     assignedInspector: 'Dr. Sarah Al Mansoori',
     lastUpdated: 'Sept 13, 2026'
   }

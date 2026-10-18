@@ -68,11 +68,10 @@ export default function AdminView({
   ];
 
   const statusDistributionData = [
-    { name: 'Certified', value: 45, color: '#10B981' },
-    { name: 'Under Inspection', value: 38, color: '#3B82F6' },
-    { name: 'Submitted', value: 24, color: '#06B6D4' },
-    { name: 'In Progress', value: 52, color: '#F59E0B' },
-    { name: 'Draft', value: 16, color: '#6B7280' }
+    { name: 'Verified & Recognized', value: 45, color: '#10B981' },
+    { name: 'QCF Partners reviewing', value: 38, color: '#8B5CF6' },
+    { name: 'Submitted to QCF', value: 24, color: '#3B82F6' },
+    { name: 'Self-evaluating', value: 68, color: '#F59E0B' }
   ];
 
   const handleInspectorAssign = (schoolId, inspectorName) => {
@@ -444,11 +443,10 @@ export default function AdminView({
                   className="text-xs bg-gray-50 border border-gray-200 rounded-xl px-3 py-2 font-medium focus:outline-none focus:ring-2 focus:ring-emerald-600 cursor-pointer"
                 >
                   <option value="All">All Statuses</option>
-                  <option value="Submitted">Submitted</option>
-                  <option value="Under Inspection">Under Inspection</option>
-                  <option value="In Progress">In Progress</option>
-                  <option value="Certified">Certified</option>
-                  <option value="Draft">Draft</option>
+                  <option value="Self-evaluating">Self-evaluating</option>
+                  <option value="Submitted to QCF">Submitted to QCF</option>
+                  <option value="QCF Partners reviewing">QCF Partners reviewing</option>
+                  <option value="Verified & Recognized">Verified & Recognized</option>
                 </select>
               </div>
             </div>
@@ -489,9 +487,9 @@ export default function AdminView({
                       </td>
                       <td className="p-4">
                         <span className={`px-2.5 py-1 rounded-full text-[10px] font-bold ${
-                          sch.status === 'Certified' ? 'bg-emerald-100 text-emerald-800 border border-emerald-200' :
-                          sch.status === 'Submitted' ? 'bg-blue-100 text-blue-800 border border-blue-200' :
-                          sch.status === 'Under Inspection' ? 'bg-purple-100 text-purple-800 border border-purple-200' :
+                          sch.status === 'Verified & Recognized' ? 'bg-emerald-100 text-emerald-800 border border-emerald-200' :
+                          sch.status === 'QCF Partners reviewing' ? 'bg-purple-100 text-purple-800 border border-purple-200' :
+                          sch.status === 'Submitted to QCF' ? 'bg-blue-100 text-blue-800 border border-blue-200' :
                           'bg-amber-100 text-amber-800 border border-amber-200'
                         }`}>
                           {sch.status}

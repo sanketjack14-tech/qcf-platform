@@ -44,7 +44,7 @@ export async function seedInitialDatabaseIfEmpty() {
         khda_rating: s.khdaRating,
         district: s.district,
         completion_percentage: s.completionPercentage || 0,
-        status: s.status || 'Draft',
+        status: s.status || 'Self-evaluating',
         assigned_inspector: s.assignedInspector || 'Dr. Sarah Al Mansoori'
       }));
       await supabase.from('schools').upsert(schoolPayloads);
@@ -127,7 +127,7 @@ export async function getSchoolsFromDB() {
       khdaRating: item.khda_rating,
       district: item.district,
       completionPercentage: item.completion_percentage || 0,
-      status: item.status || 'Draft',
+      status: item.status || 'Self-evaluating',
       assignedInspector: item.assigned_inspector || 'Dr. Sarah Al Mansoori'
     }));
   } catch (err) {

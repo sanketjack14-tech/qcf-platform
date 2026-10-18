@@ -62,7 +62,7 @@ export default function SchoolView({
       saveSchoolToDB({
         ...school,
         completionPercentage: newProgress,
-        status: school.status === 'Certified' || school.status === 'Submitted' ? school.status : 'Draft'
+        status: school.status === 'Verified & Recognized' || school.status === 'Submitted to QCF' || school.status === 'QCF Partners reviewing' ? school.status : 'Self-evaluating'
       });
     }
   };
@@ -72,12 +72,12 @@ export default function SchoolView({
       const updatedSchool = {
         ...school,
         completionPercentage: overallProgress,
-        status: school.status === 'Certified' || school.status === 'Submitted' ? school.status : 'Draft'
+        status: school.status === 'Verified & Recognized' || school.status === 'Submitted to QCF' || school.status === 'QCF Partners reviewing' ? school.status : 'Self-evaluating'
       };
       await saveSchoolToDB(updatedSchool);
       await saveAllUserRatingsToDB(school.id, userRatings);
     }
-    alert(`✅ Progress Draft saved successfully! (${ratedCount} of ${totalStatementsCount} standards [${overallProgress}%] saved to Cloud DB)`);
+    alert(`✅ Progress saved successfully! (${ratedCount} of ${totalStatementsCount} standards [${overallProgress}%] saved to Cloud DB)`);
   };
 
   return (
@@ -92,7 +92,12 @@ export default function SchoolView({
               <span className="bg-emerald-700/80 text-emerald-100 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider">
                 School Workspace
               </span>
-              <span className="bg-amber-500/20 text-amber-300 border border-amber-500/40 px-3 py-1 rounded-full text-xs font-semibold">
+              <span className={`px-3 py-1 rounded-full text-xs font-semibold border ${
+                school.status === 'Verified & Recognized' ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40' :
+                school.status === 'QCF Partners reviewing' ? 'bg-purple-500/20 text-purple-300 border-purple-500/40' :
+                school.status === 'Submitted to QCF' ? 'bg-blue-500/20 text-blue-300 border-blue-500/40' :
+                'bg-amber-500/20 text-amber-300 border-amber-500/40'
+              }`}>
                 Status: {school.status}
               </span>
             </div>
