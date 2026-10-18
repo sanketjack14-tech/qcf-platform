@@ -569,7 +569,7 @@ export default function HomePage({ onOpenAuth, onSelectRole }) {
 
           <div className="flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-left text-[11px] text-emerald-400/80 font-medium">
             <div>
-              Quality Careers Framework (QCF) • Academic & Career Readiness Directorate © 2026
+              Quality Careers Framework (QCF) • Academic Guidance & Career Readiness Directorate © 2026
             </div>
             <div>
               The Gulf Region Future Readiness Recognition Standard

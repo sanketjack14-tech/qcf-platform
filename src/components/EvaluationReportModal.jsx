@@ -163,7 +163,7 @@ export default function EvaluationReportModal({
           <div className="bg-[#16362B] text-white rounded-2xl p-6 shadow-md border border-emerald-800 flex flex-row items-center justify-between gap-6 print:p-4 print:rounded-xl print:shadow-none">
             <div className="space-y-1">
               <span className="bg-emerald-700 text-emerald-100 font-bold text-[10px] px-3 py-1 rounded-full uppercase tracking-wider">
-                Executive Assessment Verdict
+                Self-Evaluation Outcome
               </span>
               <h3 className="text-xl font-extrabold text-white mt-1 font-heading">
                 QCF Index Performance Grade

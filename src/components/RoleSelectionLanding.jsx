@@ -102,7 +102,7 @@ export default function RoleSelectionLanding({
             }`}
           >
             <ShieldCheck className="w-4 h-4" />
-            <span>For QCF Team</span>
+            <span>For QCF Partners</span>
           </button>
         </div>
       </header>
@@ -123,7 +123,7 @@ export default function RoleSelectionLanding({
               />
               <div className="space-y-1">
                 <span className="bg-emerald-800/80 text-emerald-200 border border-emerald-600/40 text-[10px] font-extrabold px-3 py-1 rounded-full uppercase tracking-widest inline-block">
-                  Academic & Career Readiness
+                  Academic Guidance & Career Readiness
                 </span>
                 <h1 className="text-2xl sm:text-4xl lg:text-5xl font-black text-white font-heading tracking-tight leading-none">
                   Quality Careers Framework
@@ -427,7 +427,7 @@ export default function RoleSelectionLanding({
 
       {/* Footer */}
       <footer className="relative z-10 max-w-7xl mx-auto w-full pt-6 border-t border-emerald-800/60 text-center text-xs text-emerald-300/80">
-        Quality Careers Framework (QCF) • Academic & Career Readiness Directorate © 2026
+        Quality Careers Framework (QCF) • Academic Guidance & Career Readiness Directorate © 2026
       </footer>
 
     </div>

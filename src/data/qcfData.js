@@ -84,7 +84,7 @@ export const RATING_SCALE = [
   {
     level: 4,
     title: 'Excellent',
-    label: 'Excellent impact across student academic & career readiness',
+    label: 'Excellent impact across student academic guidance & career readiness',
     iconName: 'Sparkles',
     color: '#2563EB',
     bg: '#EFF6FF',
