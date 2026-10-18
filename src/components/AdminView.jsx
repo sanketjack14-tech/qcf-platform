@@ -284,7 +284,7 @@ export default function AdminView({
         <div>
           <div className="flex items-center gap-2">
             <span className="bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider">
-              Executive Directorate Dashboard
+              Executive Self-Evaluation Dashboard
             </span>
           </div>
           <h1 className="text-2xl sm:text-3xl font-extrabold text-white mt-2 font-heading">

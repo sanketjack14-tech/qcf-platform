@@ -129,14 +129,14 @@ export default function RoleSelectionLanding({
                   Quality Careers Framework
                 </h1>
                 <p className="text-xs sm:text-sm font-bold text-emerald-300 uppercase tracking-widest">
-                  Evaluation Directorate
+                  Schools’ Self-Evaluation
                 </p>
               </div>
             </div>
 
             {/* QCF Descriptor Subtext */}
             <p className="text-emerald-100 text-base sm:text-lg font-medium leading-relaxed max-w-2xl border-l-4 border-emerald-500 pl-4 py-1">
-              The school improvement and quality-assurance framework designed to strengthen academic career readiness and future-readiness provision across schools.
+              The school improvement and quality assurance framework is designed to strengthen academic guidance and career readiness across schools.
             </p>
 
             {/* Clean 1-Liner Subtext */}
@@ -427,7 +427,7 @@ export default function RoleSelectionLanding({
 
       {/* Footer */}
       <footer className="relative z-10 max-w-7xl mx-auto w-full pt-6 border-t border-emerald-800/60 text-center text-xs text-emerald-300/80">
-        Quality Careers Framework (QCF) • Academic Guidance & Career Readiness Directorate © 2026
+        Quality Careers Framework (QCF) • Academic Guidance & Career Readiness Schools’ Self-Evaluation © 2026
       </footer>
 
     </div>

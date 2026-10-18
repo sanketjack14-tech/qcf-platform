@@ -268,7 +268,7 @@ export default function App() {
             <span className="font-bold text-white">Quality Careers Framework (QCF)</span> — School Evaluation Platform
           </div>
           <div className="text-emerald-400 font-medium">
-            Beta Edition 2026 © Quality Careers Framework Directorate
+            Beta Edition 2026 © Quality Careers Framework Schools’ Self-Evaluation
           </div>
         </div>
       </footer>

@@ -22,7 +22,7 @@ export default function Header({ currentRole, setCurrentRole, activeSchool, setA
     },
     {
       id: 'admin',
-      label: 'Admin Directorate',
+      label: 'Admin Workspace',
       subtitle: 'Dubai Analytics & Inspector Assignment',
       icon: LayoutDashboard,
       badge: 'Executive Admin',

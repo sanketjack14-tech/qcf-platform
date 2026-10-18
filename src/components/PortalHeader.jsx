@@ -30,7 +30,7 @@ export default function PortalHeader({ currentRole, onLogout, activeSchool, setA
               {currentRole === 'admin' && (
                 <>
                   <LayoutDashboard className="w-3.5 h-3.5 text-purple-700" />
-                  <span>Executive Admin Directorate</span>
+                  <span>Executive Admin Workspace</span>
                 </>
               )}
             </div>

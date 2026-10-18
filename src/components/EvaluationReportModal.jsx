@@ -124,7 +124,7 @@ export default function EvaluationReportModal({
 
             <div className="text-right">
               <div className="text-xs font-bold text-emerald-800 uppercase tracking-widest">
-                Quality Careers Framework Directorate
+                Quality Careers Framework Schools’ Self-Evaluation
               </div>
               <h1 className="text-2xl font-black text-[#16362B] font-heading mt-1">
                 Quality Careers Framework Report
@@ -150,7 +150,7 @@ export default function EvaluationReportModal({
             <div>
               <div className="text-[10px] font-bold text-emerald-800 uppercase tracking-wider">Assigned QCF Partners</div>
               <div className="text-xs font-extrabold text-gray-900 mt-0.5">Kavita and Magda</div>
-              <div className="text-[10px] text-gray-500">Evaluation Directorate</div>
+              <div className="text-[10px] text-gray-500">Schools’ Self-Evaluation</div>
             </div>
             <div>
               <div className="text-[10px] font-bold text-emerald-800 uppercase tracking-wider">Audit Date</div>
@@ -297,7 +297,7 @@ export default function EvaluationReportModal({
           </div>
 
           <div className="text-center text-[10px] text-gray-400 pt-4 print:pt-2">
-            Official Quality Careers Framework (QCF) Report — Issued for Circulation to Dubai Schools & KHDA Directorate.
+            Official Quality Careers Framework (QCF) Report — Issued for Circulation to Partner Schools &amp; Education Authorities.
           </div>
 
         </div>
