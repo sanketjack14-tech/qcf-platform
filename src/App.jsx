@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import PortalHeader from './components/PortalHeader';
+import HomePage from './components/HomePage';
 import RoleSelectionLanding from './components/RoleSelectionLanding';
 import SchoolView from './components/SchoolView';
 import InspectorView from './components/InspectorView';
@@ -19,7 +20,11 @@ import {
 } from './lib/supabaseClient';
 
 export default function App() {
-  // Role State: null (shows Main Gateway Landing) | 'school' | 'inspector' | 'admin'
+  // Page View Mode when logged out: 'home' | 'portal_auth'
+  const [viewMode, setViewMode] = useState('home');
+  const [authConfig, setAuthConfig] = useState({ tab: 'school', mode: 'signin' });
+
+  // Role State: null (shows Home or Portal Auth) | 'school' | 'inspector' | 'admin'
   const [currentRole, setCurrentRole] = useState(null); 
   const [schools, setSchools] = useState(DUBAI_SCHOOLS);
   const [activeSchool, setActiveSchool] = useState(DUBAI_SCHOOLS[0]);
@@ -162,9 +167,28 @@ export default function App() {
     alert(`Success! SEF for ${activeSchool.name} has been submitted to QCF Partners.`);
   };
 
-  // If no role is selected, show the Role Selection Landing Page
+  // If no role is selected, show the Home Page or Portal Auth Gateway
   if (!currentRole) {
-    return <RoleSelectionLanding onSelectRole={(role) => setCurrentRole(role)} />;
+    if (viewMode === 'home') {
+      return (
+        <HomePage 
+          onOpenAuth={(tab = 'school', mode = 'signin') => {
+            setAuthConfig({ tab, mode });
+            setViewMode('portal_auth');
+          }}
+          onSelectRole={(role) => setCurrentRole(role)}
+        />
+      );
+    }
+
+    return (
+      <RoleSelectionLanding 
+        onBackToHome={() => setViewMode('home')}
+        initialTab={authConfig.tab}
+        initialAuthMode={authConfig.mode}
+        onSelectRole={(role) => setCurrentRole(role)} 
+      />
+    );
   }
 
   return (
@@ -172,7 +196,10 @@ export default function App() {
       {/* Dedicated Portal Header (no demo switcher strip) */}
       <PortalHeader 
         currentRole={currentRole}
-        onLogout={() => setCurrentRole(null)}
+        onLogout={() => {
+          setCurrentRole(null);
+          setViewMode('home');
+        }}
         activeSchool={activeSchool}
         setActiveSchool={setActiveSchool}
         schools={schools}

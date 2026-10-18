@@ -5,12 +5,17 @@ import {
 } from 'lucide-react';
 import { QCF_DOMAINS } from '../data/qcfData';
 
-export default function RoleSelectionLanding({ onSelectRole }) {
+export default function RoleSelectionLanding({ 
+  onSelectRole, 
+  onBackToHome, 
+  initialTab = 'school', 
+  initialAuthMode = 'signin' 
+}) {
   // Top Header Mode Toggle: 'school' | 'partner'
-  const [activeTab, setActiveTab] = useState('school');
+  const [activeTab, setActiveTab] = useState(initialTab);
 
   // School Auth Mode: 'signin' | 'signup'
-  const [schoolAuthMode, setSchoolAuthMode] = useState('signin');
+  const [schoolAuthMode, setSchoolAuthMode] = useState(initialAuthMode);
 
   // Sign-In Form State
   const [email, setEmail] = useState('');
@@ -60,7 +65,17 @@ export default function RoleSelectionLanding({ onSelectRole }) {
 
       {/* Top Header Bar with Schools / QCF Team Toggle */}
       <header className="relative z-10 max-w-7xl mx-auto w-full flex flex-wrap items-center justify-between gap-4 pb-6 border-b border-emerald-800/60">
-        <QCFLogo className="w-14 h-14" size="large" variant="light" />
+        <div className="flex items-center gap-4">
+          {onBackToHome && (
+            <button
+              onClick={onBackToHome}
+              className="px-3.5 py-1.5 rounded-xl bg-emerald-950/80 hover:bg-emerald-900 border border-emerald-700/60 text-emerald-200 hover:text-white text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer"
+            >
+              <span>← Back to Home</span>
+            </button>
+          )}
+          <QCFLogo className="w-14 h-14" size="large" variant="light" />
+        </div>
 
         {/* Header Toggle: Schools vs QCF Team */}
         <div className="flex items-center gap-2 bg-emerald-950/90 border border-emerald-800/90 p-1.5 rounded-2xl shadow-xl">
