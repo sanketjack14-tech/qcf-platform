@@ -6,7 +6,7 @@ import SchoolView from './components/SchoolView';
 import InspectorView from './components/InspectorView';
 import AdminView from './components/AdminView';
 import EvidenceModal from './components/EvidenceModal';
-import { DUBAI_SCHOOLS, QCF_STATEMENTS, sortStatements } from './data/qcfData';
+import { DUBAI_SCHOOLS, QCF_STATEMENTS, PATRICIA_SELF_EVALUATION_RATINGS, sortStatements } from './data/qcfData';
 import { 
   isSupabaseConfigured, 
   getStatementsFromDB, 
@@ -27,7 +27,7 @@ export default function App() {
   // Role State: null (shows Home or Portal Auth) | 'school' | 'inspector' | 'admin'
   const [currentRole, setCurrentRole] = useState(null); 
   const [schools, setSchools] = useState(DUBAI_SCHOOLS);
-  const [activeSchool, setActiveSchool] = useState(DUBAI_SCHOOLS[0]);
+  const [activeSchool, setActiveSchool] = useState(DUBAI_SCHOOLS.find(s => s.id === 'sch-106') || DUBAI_SCHOOLS[0]);
 
   // Master QCF Statements state (allows Admin to add, edit, or hide questions with localStorage & DB persistence)
   const [statements, setStatements] = React.useState(() => {
@@ -53,8 +53,7 @@ export default function App() {
     }
   }, [statements]);
 
-  // Self-evaluation ratings state (keyed by statement ID) - 37 rated standards for Dubai International Academy (88%)
-  const [userRatings, setUserRatings] = useState({
+  const defaultDubaiRatings = {
     'stmt-1_1': 4, 'stmt-1_2': 5, 'stmt-1_3': 3, 'stmt-1_4': 4, 'stmt-1_5': 4,
     'stmt-1_6': 5, 'stmt-1_7': 4, 'stmt-1_8': 3, 'stmt-1_9': 4, 'stmt-2_1': 5,
     'stmt-2_2': 4, 'stmt-2_3': 3, 'stmt-2_4': 4, 'stmt-2_5': 5, 'stmt-2_6': 4,
@@ -63,7 +62,10 @@ export default function App() {
     'stmt-3_1g': 4, 'stmt-4_1': 5, 'stmt-4_2': 4, 'stmt-4_3': 3, 'stmt-4_4': 4,
     'stmt-4_5': 5, 'stmt-4_6': 4, 'stmt-4_7': 3, 'stmt-4_8': 4, 'stmt-5_1': 5,
     'stmt-5_2': 4, 'stmt-5_3': 3
-  });
+  };
+
+  // Self-evaluation ratings state (keyed by statement ID) - initialized with Patricia's World Academy (100% evaluated from official Google Sheet)
+  const [userRatings, setUserRatings] = useState(PATRICIA_SELF_EVALUATION_RATINGS);
 
   // Inspector ratings & verdicts state (shared between Inspector and Admin view report)
   const [inspectorRatings, setInspectorRatings] = useState({
@@ -104,13 +106,19 @@ export default function App() {
       // 3. Ratings for Active School
       if (activeSchool?.id) {
         const dbRatings = await getRatingsFromDB(activeSchool.id);
-        if (dbRatings) {
+        if (dbRatings && Object.keys(dbRatings.userRatings || {}).length > 0) {
           setUserRatings(dbRatings.userRatings || {});
           setInspectorRatings(dbRatings.inspectorRatings || {});
           setInspectorVerdicts(dbRatings.inspectorVerdicts || {});
           setInspectorNotes(dbRatings.inspectorNotes || {});
         } else {
-          setUserRatings({});
+          if (activeSchool.id === 'sch-106') {
+            setUserRatings(PATRICIA_SELF_EVALUATION_RATINGS);
+          } else if (activeSchool.id === 'sch-101') {
+            setUserRatings(defaultDubaiRatings);
+          } else {
+            setUserRatings({});
+          }
           setInspectorRatings({});
           setInspectorVerdicts({});
           setInspectorNotes({});

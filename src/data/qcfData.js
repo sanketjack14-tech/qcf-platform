@@ -255,6 +255,14 @@ export const QCF_STATEMENTS = [
     "evidenceCount": 0
   },
   {
+    "id": "stmt-2_11",
+    "code": "2.11",
+    "domainNumber": 2,
+    "statement": "The school meets all national and international careers guidance and educational standards that it is required to",
+    "defaultRating": 3,
+    "evidenceCount": 0
+  },
+  {
     "id": "stmt-3_1a",
     "code": "3.1a",
     "domainNumber": 3,
@@ -500,8 +508,66 @@ export const DUBAI_SCHOOLS = [
     status: 'Self-evaluating',
     assignedInspector: 'Dr. Sarah Al Mansoori',
     lastUpdated: 'Sept 13, 2026'
+  },
+  {
+    id: 'sch-106',
+    name: "Patricia's World Academy",
+    curriculum: 'IB Continuum & International',
+    khdaRating: 'Outstanding',
+    district: 'Dubai Knowledge Park, Dubai',
+    studentsCount: 2200,
+    completionPercentage: 100,
+    status: 'Submitted to QCF',
+    assignedInspector: 'Kavita and Magda',
+    lastUpdated: 'Oct 15, 2026'
   }
 ];
+
+export const PATRICIA_SELF_EVALUATION_RATINGS = {
+  "stmt-1_1": 3,
+  "stmt-1_2": 4,
+  "stmt-1_3": 3,
+  "stmt-1_4": 3,
+  "stmt-1_5": 3,
+  "stmt-1_6": 2,
+  "stmt-1_7": 2,
+  "stmt-1_8": 2,
+  "stmt-1_9": 1,
+  "stmt-2_1": 3,
+  "stmt-2_2": 3,
+  "stmt-2_3": 3,
+  "stmt-2_4": 2,
+  "stmt-2_5": 2,
+  "stmt-2_6": 3,
+  "stmt-2_7": 2,
+  "stmt-2_8": 4,
+  "stmt-2_9": 3,
+  "stmt-2_10": 2,
+  "stmt-2_11": 3,
+  "stmt-3_1a": 1,
+  "stmt-3_1b": 3,
+  "stmt-3_1c": 3,
+  "stmt-3_1d": 3,
+  "stmt-3_1e": 3,
+  "stmt-3_1f": 1,
+  "stmt-3_1g": 3,
+  "stmt-4_1": 3,
+  "stmt-4_2": 3,
+  "stmt-4_3": 2,
+  "stmt-4_4": 2,
+  "stmt-4_5": 3,
+  "stmt-4_6": 3,
+  "stmt-4_7": 3,
+  "stmt-4_8": 3,
+  "stmt-5_1": 1,
+  "stmt-5_2": 3,
+  "stmt-5_3": 3,
+  "stmt-5_4": 1,
+  "stmt-5_5": 4,
+  "stmt-5_6": 5,
+  "stmt-5_7": 3,
+  "stmt-5_8": 4
+};
 
 export const INSPECTORS = [
   {
