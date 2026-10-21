@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import QCFLogo from './QCFLogo';
 import { 
-  School, ShieldCheck, ArrowRight, Mail, KeyRound, User, Building, MapPin, Ticket, CheckCircle2
+  School, ShieldCheck, ArrowRight, Mail, KeyRound, User, Building, MapPin, Ticket, CheckCircle2, LayoutDashboard
 } from 'lucide-react';
 import { QCF_DOMAINS } from '../data/qcfData';
 
@@ -41,6 +41,8 @@ export default function RoleSelectionLanding({
     e.preventDefault();
     if (activeTab === 'school') {
       onSelectRole('school');
+    } else if (activeTab === 'admin') {
+      onSelectRole('admin');
     } else {
       onSelectRole('inspector');
     }
@@ -103,6 +105,19 @@ export default function RoleSelectionLanding({
           >
             <ShieldCheck className="w-4 h-4" />
             <span>For QCF Partners</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setActiveTab('admin')}
+            className={`px-5 py-2 rounded-xl text-xs font-extrabold transition-all flex items-center gap-2 cursor-pointer ${
+              activeTab === 'admin'
+                ? 'bg-purple-600 text-white shadow-md ring-2 ring-purple-300 font-black'
+                : 'text-purple-200 hover:text-white hover:bg-purple-900/60'
+            }`}
+          >
+            <LayoutDashboard className="w-4 h-4" />
+            <span>For Admin</span>
           </button>
         </div>
       </header>
@@ -168,14 +183,18 @@ export default function RoleSelectionLanding({
               {/* Form Workspace Header */}
               <div className="space-y-3 mb-6 text-left relative z-10">
                 <div className="flex items-center justify-between">
-                  <span className="text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-full bg-emerald-100 text-emerald-900 inline-block">
-                    {activeTab === 'school' ? 'School Workspace' : 'QCF Partner Workspace'}
+                  <span className={`text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-full inline-block ${
+                    activeTab === 'admin'
+                      ? 'bg-purple-100 text-purple-900 border border-purple-200'
+                      : 'bg-emerald-100 text-emerald-900'
+                  }`}>
+                    {activeTab === 'school' ? 'School Workspace' : activeTab === 'partner' ? 'QCF Partner Workspace' : 'QCF Admin Directorate'}
                   </span>
                   <span className="text-xs text-gray-400 font-semibold">Secure Portal</span>
                 </div>
                 
                 <h2 className="text-2xl font-black text-gray-900 font-heading">
-                  {activeTab === 'school' ? 'School Workspace' : 'QCF Partner Workspace'}
+                  {activeTab === 'school' ? 'School Workspace' : activeTab === 'partner' ? 'QCF Partner Workspace' : 'Executive Admin Workspace'}
                 </h2>
 
                 {/* If activeTab === 'school', render Sign-in / Sign-up Sub-Toggle */}
@@ -207,8 +226,8 @@ export default function RoleSelectionLanding({
                 )}
               </div>
 
-              {/* SIGN IN FORM */}
-              {(activeTab === 'partner' || schoolAuthMode === 'signin') && (
+              {/* SIGN IN FORM (Used by Partner, Admin, and School Sign-In) */}
+              {(activeTab === 'partner' || activeTab === 'admin' || schoolAuthMode === 'signin') && (
                 <form onSubmit={handleSignInSubmit} className="space-y-4 text-left relative z-10">
                   <div>
                     <label className="block text-xs font-extrabold text-gray-700 uppercase tracking-wider mb-1.5">
@@ -221,7 +240,13 @@ export default function RoleSelectionLanding({
                         required
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
-                        placeholder={activeTab === 'school' ? 'careers@school.edu' : 'partner@qualitycareersframework.com'}
+                        placeholder={
+                          activeTab === 'school' 
+                            ? 'careers@school.edu' 
+                            : activeTab === 'partner'
+                            ? 'partner@qualitycareersframework.com'
+                            : 'admin@qualitycareersframework.com'
+                        }
                         className="w-full text-xs font-semibold pl-10 pr-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-emerald-600 bg-gray-50/50"
                       />
                     </div>
@@ -262,9 +287,13 @@ export default function RoleSelectionLanding({
                   <button
                     type="submit"
                     disabled={!agreedToTerms}
-                    className="w-full py-3.5 bg-[#16362B] hover:bg-emerald-700 disabled:opacity-50 text-white font-extrabold text-xs rounded-xl flex items-center justify-center gap-2 transition-all shadow-lg cursor-pointer mt-2"
+                    className={`w-full py-3.5 disabled:opacity-50 text-white font-extrabold text-xs rounded-xl flex items-center justify-center gap-2 transition-all shadow-lg cursor-pointer mt-2 ${
+                      activeTab === 'admin'
+                        ? 'bg-purple-900 hover:bg-purple-800'
+                        : 'bg-[#16362B] hover:bg-emerald-700'
+                    }`}
                   >
-                    <span>Sign-in</span>
+                    <span>{activeTab === 'admin' ? 'Sign-in to Admin Workspace' : 'Sign-in'}</span>
                     <ArrowRight className="w-4 h-4" />
                   </button>
                 </form>

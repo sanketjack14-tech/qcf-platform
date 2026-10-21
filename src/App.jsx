@@ -40,9 +40,27 @@ export default function App() {
     return null;
   };
 
+  const getInitialAuth = () => {
+    try {
+      const params = new URLSearchParams(window.location.search);
+      const auth = params.get('auth') || params.get('tab') || params.get('login');
+      if (auth && ['admin', 'partner', 'school'].includes(auth.toLowerCase())) {
+        return { isAuth: true, tab: auth.toLowerCase(), mode: 'signin' };
+      }
+      const hash = (window.location.hash || '').toLowerCase();
+      if (hash === '#admin-login' || hash === '#login-admin') {
+        return { isAuth: true, tab: 'admin', mode: 'signin' };
+      }
+    } catch (e) {
+      console.error('Error parsing auth config from URL:', e);
+    }
+    return { isAuth: false, tab: 'school', mode: 'signin' };
+  };
+
+  const initialAuth = getInitialAuth();
   // Page View Mode when logged out: 'home' | 'portal_auth'
-  const [viewMode, setViewMode] = useState('home');
-  const [authConfig, setAuthConfig] = useState({ tab: 'school', mode: 'signin' });
+  const [viewMode, setViewMode] = useState(initialAuth.isAuth ? 'portal_auth' : 'home');
+  const [authConfig, setAuthConfig] = useState({ tab: initialAuth.tab, mode: initialAuth.mode });
 
   // Role State: null (shows Home or Portal Auth) | 'school' | 'inspector' | 'admin'
   const [currentRole, setCurrentRole] = useState(getInitialRole); 
