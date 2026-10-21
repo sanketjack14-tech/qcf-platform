@@ -73,10 +73,10 @@ export default function HomePage({ onOpenAuth, onSelectRole }) {
           </nav>
 
           {/* Header Action Buttons */}
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2.5">
             <button
               onClick={() => onOpenAuth ? onOpenAuth('school', 'signin') : onSelectRole('school')}
-              className="px-3.5 py-2 bg-emerald-500 hover:bg-emerald-400 text-[#0A1A14] font-black text-xs rounded-xl shadow-md transition-all flex items-center gap-1.5 cursor-pointer"
+              className="px-4 py-2 bg-emerald-500 hover:bg-emerald-400 text-[#0A1A14] font-black text-xs rounded-xl shadow-md transition-all flex items-center gap-1.5 cursor-pointer"
             >
               <School className="w-3.5 h-3.5" />
               <span>School Workspace</span>
@@ -84,18 +84,10 @@ export default function HomePage({ onOpenAuth, onSelectRole }) {
 
             <button
               onClick={() => onOpenAuth ? onOpenAuth('partner', 'signin') : onSelectRole('inspector')}
-              className="px-3 py-2 bg-emerald-900/80 hover:bg-emerald-800 text-emerald-100 border border-emerald-700/80 font-bold text-xs rounded-xl transition-all flex items-center gap-1.5 cursor-pointer"
+              className="px-3.5 py-2 bg-emerald-900/80 hover:bg-emerald-800 text-emerald-100 border border-emerald-700/80 font-bold text-xs rounded-xl transition-all flex items-center gap-1.5 cursor-pointer"
             >
               <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
               <span className="hidden sm:inline">QCF Partners</span>
-            </button>
-
-            <button
-              onClick={() => onOpenAuth ? onOpenAuth('admin', 'signin') : onSelectRole('admin')}
-              className="px-3 py-2 bg-purple-950/80 hover:bg-purple-900 text-purple-200 border border-purple-700/80 font-bold text-xs rounded-xl transition-all flex items-center gap-1.5 cursor-pointer"
-            >
-              <LayoutDashboard className="w-3.5 h-3.5 text-purple-400" />
-              <span>Admin Login</span>
             </button>
           </div>
         </div>
