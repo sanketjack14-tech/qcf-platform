@@ -106,19 +106,6 @@ export default function RoleSelectionLanding({
             <ShieldCheck className="w-4 h-4" />
             <span>For QCF Partners</span>
           </button>
-
-          <button
-            type="button"
-            onClick={() => setActiveTab('admin')}
-            className={`px-5 py-2 rounded-xl text-xs font-extrabold transition-all flex items-center gap-2 cursor-pointer ${
-              activeTab === 'admin'
-                ? 'bg-purple-600 text-white shadow-md ring-2 ring-purple-300 font-black'
-                : 'text-purple-200 hover:text-white hover:bg-purple-900/60'
-            }`}
-          >
-            <LayoutDashboard className="w-4 h-4" />
-            <span>For Admin</span>
-          </button>
         </div>
       </header>
 
