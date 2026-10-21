@@ -564,6 +564,8 @@ export default function HomePage({ onOpenAuth, onSelectRole }) {
               <button onClick={() => scrollToSection('audience')} className="hover:text-white transition-colors cursor-pointer">Audience</button>
               <button onClick={() => scrollToSection('inclusivity')} className="hover:text-white transition-colors cursor-pointer">Inclusivity</button>
               <button onClick={() => onOpenAuth ? onOpenAuth('school', 'signin') : onSelectRole('school')} className="text-emerald-400 hover:text-emerald-300 font-extrabold cursor-pointer">School Portal</button>
+              <button onClick={() => onSelectRole('inspector')} className="text-emerald-400 hover:text-emerald-300 font-extrabold cursor-pointer">QCF Partners</button>
+              <button onClick={() => onSelectRole('admin')} className="text-purple-300 hover:text-purple-200 font-extrabold cursor-pointer bg-purple-950/60 px-3 py-1 rounded-lg border border-purple-800/80">Admin Portal</button>
             </div>
           </div>
 

@@ -20,14 +20,79 @@ import {
 } from './lib/supabaseClient';
 
 export default function App() {
+  // Parse URL query / hash / path to support direct deep linking: e.g. ?role=admin, ?role=inspector, #admin
+  const getInitialRole = () => {
+    try {
+      const params = new URLSearchParams(window.location.search);
+      const roleParam = params.get('role');
+      if (roleParam && ['admin', 'inspector', 'school'].includes(roleParam.toLowerCase())) {
+        return roleParam.toLowerCase();
+      }
+      const hash = (window.location.hash || '').toLowerCase();
+      if (hash === '#admin') return 'admin';
+      if (hash === '#inspector' || hash === '#partner') return 'inspector';
+      if (hash === '#school') return 'school';
+      const path = (window.location.pathname || '').toLowerCase();
+      if (path.endsWith('/admin')) return 'admin';
+    } catch (e) {
+      console.error('Error parsing role from URL:', e);
+    }
+    return null;
+  };
+
   // Page View Mode when logged out: 'home' | 'portal_auth'
   const [viewMode, setViewMode] = useState('home');
   const [authConfig, setAuthConfig] = useState({ tab: 'school', mode: 'signin' });
 
   // Role State: null (shows Home or Portal Auth) | 'school' | 'inspector' | 'admin'
-  const [currentRole, setCurrentRole] = useState(null); 
+  const [currentRole, setCurrentRole] = useState(getInitialRole); 
   const [schools, setSchools] = useState(DUBAI_SCHOOLS);
   const [activeSchool, setActiveSchool] = useState(DUBAI_SCHOOLS.find(s => s.id === 'sch-106') || DUBAI_SCHOOLS[0]);
+
+  // Synchronize browser history / URL when role changes
+  const handleSelectRole = (role) => {
+    setCurrentRole(role);
+    try {
+      const url = new URL(window.location.href);
+      if (role) {
+        url.searchParams.set('role', role);
+      } else {
+        url.searchParams.delete('role');
+      }
+      window.history.pushState({}, '', url.pathname + (url.search ? url.search : ''));
+    } catch (e) {
+      console.error('Failed to update URL state:', e);
+    }
+  };
+
+  const handleLogout = () => {
+    setCurrentRole(null);
+    setViewMode('home');
+    try {
+      const url = new URL(window.location.href);
+      url.searchParams.delete('role');
+      url.hash = '';
+      window.history.pushState({}, '', url.pathname);
+    } catch (e) {
+      console.error('Failed to clear URL state:', e);
+    }
+  };
+
+  // Listen to browser navigation (back/forward or hash changes)
+  React.useEffect(() => {
+    const handleUrlChange = () => {
+      const detected = getInitialRole();
+      if (detected !== currentRole) {
+        setCurrentRole(detected);
+      }
+    };
+    window.addEventListener('popstate', handleUrlChange);
+    window.addEventListener('hashchange', handleUrlChange);
+    return () => {
+      window.removeEventListener('popstate', handleUrlChange);
+      window.removeEventListener('hashchange', handleUrlChange);
+    };
+  }, [currentRole]);
 
   // Master QCF Statements state (allows Admin to add, edit, or hide questions with localStorage & DB persistence)
   const [statements, setStatements] = React.useState(() => {
@@ -184,7 +249,7 @@ export default function App() {
             setAuthConfig({ tab, mode });
             setViewMode('portal_auth');
           }}
-          onSelectRole={(role) => setCurrentRole(role)}
+          onSelectRole={handleSelectRole}
         />
       );
     }
@@ -194,7 +259,7 @@ export default function App() {
         onBackToHome={() => setViewMode('home')}
         initialTab={authConfig.tab}
         initialAuthMode={authConfig.mode}
-        onSelectRole={(role) => setCurrentRole(role)} 
+        onSelectRole={handleSelectRole} 
       />
     );
   }
@@ -204,10 +269,7 @@ export default function App() {
       {/* Dedicated Portal Header (no demo switcher strip) */}
       <PortalHeader 
         currentRole={currentRole}
-        onLogout={() => {
-          setCurrentRole(null);
-          setViewMode('home');
-        }}
+        onLogout={handleLogout}
         activeSchool={activeSchool}
         setActiveSchool={setActiveSchool}
         schools={schools}
