@@ -89,9 +89,6 @@ export default function SchoolView({
         <div className="relative z-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
           <div>
             <div className="flex items-center gap-3">
-              <span className="bg-emerald-700/80 text-emerald-100 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider">
-                School Workspace
-              </span>
               <span className={`px-3 py-1 rounded-full text-xs font-semibold border ${
                 school.status === 'Verified & Recognized' ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40' :
                 school.status === 'QCF Partners reviewing' ? 'bg-purple-500/20 text-purple-300 border-purple-500/40' :

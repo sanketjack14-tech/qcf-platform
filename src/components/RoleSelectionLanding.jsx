@@ -113,28 +113,11 @@ export default function RoleSelectionLanding({
       <main className="relative z-10 max-w-7xl mx-auto w-full my-auto py-6 sm:py-10">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
           
-          {/* LEFT SECTION (Col 1-7): QCF Logo, Descriptor & Domain Overview */}
+          {/* LEFT SECTION (Col 1-7): Descriptor */}
           <div className="lg:col-span-7 space-y-6 text-left pr-0 lg:pr-6">
-            
-            {/* Prominent High-Res Updated QCF Logo */}
-            <div className="flex items-center gap-4">
-              <img
-                src="/qcf_logo.jpg"
-                alt="Quality Careers Framework Official Badge"
-                className="w-24 h-24 sm:w-32 sm:h-32 rounded-full object-contain ring-4 ring-emerald-500/40 shadow-2xl bg-black shrink-0"
-              />
-              <div className="space-y-1">
-                <span className="bg-emerald-800/80 text-emerald-200 border border-emerald-600/40 text-[10px] font-extrabold px-3 py-1 rounded-full uppercase tracking-widest inline-block">
-                  Academic Guidance & Career Readiness
-                </span>
-                <h1 className="text-2xl sm:text-4xl lg:text-5xl font-black text-white font-heading tracking-tight leading-none">
-                  Quality Careers Framework
-                </h1>
-                <p className="text-xs sm:text-sm font-bold text-emerald-300 uppercase tracking-widest">
-                  Schools’ Self-Evaluation
-                </p>
-              </div>
-            </div>
+            <h1 className="text-3xl sm:text-5xl font-black text-white font-heading tracking-tight">
+              Schools’ Self-Evaluation
+            </h1>
 
             {/* QCF Descriptor Subtext */}
             <p className="text-emerald-100 text-base sm:text-lg font-medium leading-relaxed max-w-2xl border-l-4 border-emerald-500 pl-4 py-1">
@@ -143,23 +126,8 @@ export default function RoleSelectionLanding({
 
             {/* Clean 1-Liner Subtext */}
             <p className="text-emerald-200/90 text-xs sm:text-sm font-semibold">
-              Sign-in to begin your school's self-evaluations across 5 academic guidance and career readiness domains.
+              Sign-in to begin your school's self-evaluations across 5 domains.
             </p>
-
-            {/* 5 Academic Domains Preview Badges */}
-            <div className="pt-2 space-y-2">
-              <div className="text-[11px] font-extrabold text-emerald-400 uppercase tracking-wider">
-                Evaluation Domains Framework:
-              </div>
-              <div className="flex flex-wrap gap-2">
-                {QCF_DOMAINS.map(d => (
-                  <span key={d.id} className="bg-emerald-950/80 border border-emerald-800 text-emerald-200 text-xs font-bold px-3 py-1.5 rounded-xl flex items-center gap-1.5">
-                    <span className="w-2 h-2 rounded-full bg-emerald-400"></span>
-                    <span>Domain {d.id}: {d.title}</span>
-                  </span>
-                ))}
-              </div>
-            </div>
           </div>
 
           {/* RIGHT SECTION (Col 8-12): Form Box (Sign-In / Sign-Up) */}
@@ -169,14 +137,7 @@ export default function RoleSelectionLanding({
 
               {/* Form Workspace Header */}
               <div className="space-y-3 mb-6 text-left relative z-10">
-                <div className="flex items-center justify-between">
-                  <span className={`text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-full inline-block ${
-                    activeTab === 'admin'
-                      ? 'bg-purple-100 text-purple-900 border border-purple-200'
-                      : 'bg-emerald-100 text-emerald-900'
-                  }`}>
-                    {activeTab === 'school' ? 'School Workspace' : activeTab === 'partner' ? 'QCF Partner Workspace' : 'QCF Admin Directorate'}
-                  </span>
+                <div className="flex items-center justify-end">
                   <span className="text-xs text-gray-400 font-semibold">Secure Portal</span>
                 </div>
                 
