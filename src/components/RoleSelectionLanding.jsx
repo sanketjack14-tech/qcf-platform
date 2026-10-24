@@ -123,11 +123,6 @@ export default function RoleSelectionLanding({
             <p className="text-emerald-100 text-base sm:text-lg font-medium leading-relaxed max-w-2xl border-l-4 border-emerald-500 pl-4 py-1">
               The school improvement and quality assurance framework is designed to strengthen academic guidance and career readiness across schools.
             </p>
-
-            {/* Clean 1-Liner Subtext */}
-            <p className="text-emerald-200/90 text-xs sm:text-sm font-semibold">
-              Sign-in to begin your school's self-evaluations across 5 domains.
-            </p>
           </div>
 
           {/* RIGHT SECTION (Col 8-12): Form Box (Sign-In / Sign-Up) */}
