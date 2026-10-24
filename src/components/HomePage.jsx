@@ -38,37 +38,31 @@ export default function HomePage({ onOpenAuth, onSelectRole }) {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5 flex items-center justify-between gap-4">
           <QCFLogo className="w-12 h-12" size="large" variant="light" />
 
-          {/* Quick Nav Anchors */}
+          {/* Quick Nav Anchors (matching footer menu) */}
           <nav className="hidden lg:flex items-center gap-6 text-xs font-bold text-emerald-100">
             <button 
               onClick={() => scrollToSection('about')} 
               className="hover:text-emerald-300 transition-colors cursor-pointer"
             >
-              About QCF
+              About
             </button>
             <button 
               onClick={() => scrollToSection('phases')} 
               className="hover:text-emerald-300 transition-colors cursor-pointer"
             >
-              Phases & Recognition
+              Phases
             </button>
             <button 
               onClick={() => scrollToSection('principles')} 
               className="hover:text-emerald-300 transition-colors cursor-pointer"
             >
-              Guiding Principles
+              Principles
             </button>
             <button 
               onClick={() => scrollToSection('audience')} 
               className="hover:text-emerald-300 transition-colors cursor-pointer"
             >
-              Who It's For
-            </button>
-            <button 
-              onClick={() => scrollToSection('inclusivity')} 
-              className="hover:text-emerald-300 transition-colors cursor-pointer"
-            >
-              Inclusivity
+              Audience
             </button>
           </nav>
 
@@ -79,7 +73,7 @@ export default function HomePage({ onOpenAuth, onSelectRole }) {
               className="px-4 py-2 bg-emerald-500 hover:bg-emerald-400 text-[#0A1A14] font-black text-xs rounded-xl shadow-md transition-all flex items-center gap-1.5 cursor-pointer"
             >
               <School className="w-3.5 h-3.5" />
-              <span>School Workspace</span>
+              <span>School Portal</span>
             </button>
 
             <button
@@ -102,20 +96,15 @@ export default function HomePage({ onOpenAuth, onSelectRole }) {
         <div className="relative z-10 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-8">
           
           {/* Badge: Welcome to QCF */}
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-900/80 border border-emerald-500/40 text-emerald-300 text-xs font-black uppercase tracking-widest shadow-inner">
-            <Sparkles className="w-4 h-4 text-emerald-400" />
+          <div className="inline-flex items-center gap-2.5 px-5 py-2 rounded-full bg-emerald-900/80 border border-emerald-500/40 text-emerald-300 text-sm sm:text-base font-black uppercase tracking-widest shadow-inner">
+            <Sparkles className="w-4.5 h-4.5 text-emerald-400" />
             <span>Welcome to QCF</span>
           </div>
 
           {/* Main Headline */}
-          <h1 className="text-3xl sm:text-5xl lg:text-6xl font-black text-white font-heading tracking-tight leading-[1.15]">
-            The only Quality Assurance Recognition for Future Readiness and Academic Guidance in the gulf region.
+          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-black text-white font-heading tracking-tight leading-snug max-w-4xl mx-auto">
+            The only Quality Assurance Recognition for Future Readiness and Academic Guidance.
           </h1>
-
-          {/* Region Sub-Descriptor */}
-          <p className="text-emerald-100/90 text-base sm:text-xl font-medium max-w-3xl mx-auto leading-relaxed">
-            Built specifically for its unique economic landscape, diverse education and employment ecosystem.
-          </p>
 
           {/* 3 Pillar Trust Badges */}
           <div className="pt-2 flex flex-wrap items-center justify-center gap-3 sm:gap-4">
@@ -169,9 +158,6 @@ export default function HomePage({ onOpenAuth, onSelectRole }) {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           
           <div className="max-w-3xl mx-auto text-center space-y-4 mb-16">
-            <span className="text-[11px] font-black uppercase tracking-widest text-emerald-800 bg-emerald-100 px-3.5 py-1 rounded-full inline-block">
-              Institutional Framework
-            </span>
             <h2 className="text-2xl sm:text-4xl font-black text-gray-900 font-heading">
               Why the Quality Career Framework Exists
             </h2>
@@ -193,7 +179,7 @@ export default function HomePage({ onOpenAuth, onSelectRole }) {
                   Commitment at the Core
                 </h3>
                 <p className="text-xs sm:text-sm text-gray-600 leading-relaxed">
-                  Through performing a self-evaluation and achieving the QCF recognition, schools demonstrate their commitment to embedding Future Readiness and Academic Guidance at the core of education. From curriculum and lesson planning to faculty development and community engagement…
+                  Through performing a self-evaluation and achieving the QCF recognition, schools demonstrate their commitment to embedding Future Readiness and Academic Guidance at the core of education.
                 </p>
               </div>
             </div>
@@ -223,7 +209,7 @@ export default function HomePage({ onOpenAuth, onSelectRole }) {
                   Beyond the Credential
                 </h3>
                 <p className="text-xs sm:text-sm text-gray-600 leading-relaxed">
-                  Becoming a QCF partner school connects your school to a national and international network of career readiness and future planning experts, partnering to ensure quality assured future-ready provisions. The QCF excels beyond the credential. It drives sustainable improvement, builds staff confidence, and reassures stakeholders that your education approach is robust, evidence-based, and future-ready.
+                  Becoming a QCF partner school connects your school to a national and international network of career readiness and future planning experts. It drives sustainable improvement, builds staff confidence, and reassures stakeholders that your education approach is robust, evidence-based, and future-ready.
                 </p>
               </div>
             </div>
@@ -233,9 +219,6 @@ export default function HomePage({ onOpenAuth, onSelectRole }) {
           {/* Banner: Global Movement Callout */}
           <div className="mt-12 bg-linear-to-r from-[#16362B] to-[#2C6450] text-white p-6 sm:p-8 rounded-3xl shadow-xl flex flex-col md:flex-row items-center justify-between gap-6">
             <div className="space-y-2 text-left">
-              <span className="text-[10px] font-black uppercase tracking-wider px-3 py-1 bg-emerald-400 text-emerald-950 rounded-full inline-block">
-                Global Network
-              </span>
               <p className="text-sm sm:text-base font-bold text-emerald-100 max-w-3xl">
                 By launching the QCF journey at your school, you join a global movement of schools recentering education to focus on real impact. Committing to the future readiness of its students.
               </p>
@@ -258,9 +241,6 @@ export default function HomePage({ onOpenAuth, onSelectRole }) {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           
           <div className="max-w-3xl mx-auto text-center space-y-4 mb-16">
-            <span className="text-[11px] font-black uppercase tracking-widest text-emerald-800 bg-emerald-100 px-3.5 py-1 rounded-full inline-block">
-              Progressive Recognition
-            </span>
             <h2 className="text-2xl sm:text-4xl font-black text-gray-900 font-heading">
               QCF Phases & Recognition
             </h2>
@@ -346,7 +326,7 @@ export default function HomePage({ onOpenAuth, onSelectRole }) {
                     Excellence Consistently Evidenced
                   </h3>
                   <div className="text-xs font-extrabold text-emerald-300 mt-1">
-                    (QCF School of Excellence / Distinction / Distinguished)
+                    (QCF School of Excellence)
                   </div>
                 </div>
 
@@ -371,9 +351,6 @@ export default function HomePage({ onOpenAuth, onSelectRole }) {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           
           <div className="max-w-3xl mx-auto text-center space-y-4 mb-16">
-            <span className="text-[11px] font-black uppercase tracking-widest text-emerald-800 bg-emerald-100 px-3.5 py-1 rounded-full inline-block">
-              Foundational Values
-            </span>
             <h2 className="text-2xl sm:text-4xl font-black text-gray-900 font-heading">
               The QCF Guiding Principles
             </h2>
@@ -454,9 +431,6 @@ export default function HomePage({ onOpenAuth, onSelectRole }) {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           
           <div className="max-w-3xl mx-auto text-center space-y-4 mb-16">
-            <span className="text-[11px] font-black uppercase tracking-widest text-emerald-800 bg-emerald-100 px-3.5 py-1 rounded-full inline-block">
-              Target Institutions
-            </span>
             <h2 className="text-2xl sm:text-4xl font-black text-gray-900 font-heading">
               Who Is QCF Recognition For?
             </h2>
@@ -508,50 +482,6 @@ export default function HomePage({ onOpenAuth, onSelectRole }) {
         </div>
       </section>
 
-      {/* ─── COMMITMENT TO INCLUSIVITY ─────────────────────────────────── */}
-      <section id="inclusivity" className="py-16 sm:py-24 bg-white border-b border-emerald-100">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-          
-          <div className="bg-linear-to-br from-[#122E24] via-[#16362B] to-[#0A1A14] text-white rounded-3xl p-8 sm:p-14 shadow-2xl relative overflow-hidden border border-emerald-800">
-            <div className="absolute top-0 right-0 w-80 h-80 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none"></div>
-
-            <div className="relative z-10 space-y-6 text-left">
-              <span className="text-[11px] font-black uppercase tracking-widest text-emerald-300 bg-emerald-950/80 border border-emerald-700/60 px-3.5 py-1.5 rounded-full inline-block">
-                Core Philosophy
-              </span>
-
-              <h2 className="text-2xl sm:text-4xl font-black text-white font-heading">
-                Our Commitment to Inclusivity
-              </h2>
-
-              <div className="text-lg sm:text-2xl font-black text-emerald-400 font-heading">
-                QCF recognizes progress as well as excellence.
-              </div>
-
-              <p className="text-emerald-100 text-sm sm:text-base leading-relaxed">
-                We believe future readiness is a continuous journey, not a fixed destination. Schools do not need to have perfected their practices to begin. What matters is their willingness to reflect, commit, improve, and demonstrate meaningful impact on student outcomes.
-              </p>
-
-              <p className="text-emerald-200 text-xs sm:text-sm leading-relaxed border-l-2 border-emerald-400 pl-4 py-1">
-                This philosophy allows QCF to recognize institutions at different stages of development while maintaining rigorous, transparent, and evidence-based standards.
-              </p>
-
-              <div className="pt-4 flex flex-wrap gap-4">
-                <button
-                  onClick={() => onOpenAuth ? onOpenAuth('school', 'signin') : onSelectRole('school')}
-                  className="px-6 py-3.5 bg-emerald-500 hover:bg-emerald-400 text-emerald-950 font-black text-xs rounded-xl shadow-lg transition-all flex items-center gap-2 cursor-pointer"
-                >
-                  <School className="w-4 h-4" />
-                  <span>Start Self-Evaluation in School Workspace</span>
-                </button>
-              </div>
-            </div>
-
-          </div>
-
-        </div>
-      </section>
-
       {/* ─── FOOTER ────────────────────────────────────────────────────── */}
       <footer className="bg-[#0A1A14] text-emerald-200 border-t border-emerald-900/60 py-12 text-xs">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
@@ -563,7 +493,6 @@ export default function HomePage({ onOpenAuth, onSelectRole }) {
               <button onClick={() => scrollToSection('phases')} className="hover:text-white transition-colors cursor-pointer">Phases</button>
               <button onClick={() => scrollToSection('principles')} className="hover:text-white transition-colors cursor-pointer">Principles</button>
               <button onClick={() => scrollToSection('audience')} className="hover:text-white transition-colors cursor-pointer">Audience</button>
-              <button onClick={() => scrollToSection('inclusivity')} className="hover:text-white transition-colors cursor-pointer">Inclusivity</button>
               <button onClick={() => onOpenAuth ? onOpenAuth('school', 'signin') : onSelectRole('school')} className="text-emerald-400 hover:text-emerald-300 font-extrabold cursor-pointer">School Portal</button>
               <button onClick={() => onOpenAuth ? onOpenAuth('partner', 'signin') : onSelectRole('inspector')} className="text-emerald-400 hover:text-emerald-300 font-extrabold cursor-pointer">QCF Partners</button>
               <button onClick={() => onOpenAuth ? onOpenAuth('admin', 'signin') : onSelectRole('admin')} className="text-purple-300 hover:text-purple-200 font-extrabold cursor-pointer bg-purple-950/60 px-3 py-1 rounded-lg border border-purple-800/80">Admin Login</button>
