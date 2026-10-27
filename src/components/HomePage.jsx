@@ -90,35 +90,35 @@ export default function HomePage({ onOpenAuth, onSelectRole }) {
       {/* ─── HERO SECTION (Styled like reference with full background photo & bottom pill bar) ─── */}
       <section className="relative min-h-[660px] lg:min-h-[740px] flex flex-col justify-between overflow-hidden bg-[#071711] text-white pt-14 sm:pt-20 pb-10 sm:pb-14">
         {/* Full-width Background Photo of Students */}
-        <div className="absolute inset-0 z-0">
+        <div className="absolute inset-0 z-0 overflow-hidden">
           <img
             src="/hero-students.jpg"
             alt="Students presenting future-ready career solutions"
-            className="w-full h-full object-cover object-[65%_center] sm:object-center"
+            className="w-full h-full object-cover object-right md:object-[center_25%] lg:object-center brightness-[1.02]"
           />
-          {/* Multi-layered Gradients for Crystal Clear Text Readability */}
-          <div className="absolute inset-0 bg-gradient-to-r from-[#06140E] via-[#071912]/95 via-45% to-[#071912]/40 sm:to-transparent"></div>
-          <div className="absolute inset-0 bg-gradient-to-t from-[#06140E] via-transparent to-[#071912]/70"></div>
-          <div className="absolute inset-0 bg-[#06140E]/30 sm:bg-transparent"></div>
+          {/* Focused Left Scrim: Covers left 35-45% for crisp text contrast, leaving the right 55-60%+ of the photo completely clear & vibrant */}
+          <div className="absolute inset-0 bg-gradient-to-r from-[#06140E]/95 via-[#071912]/80 via-35% md:via-42% to-transparent to-65%"></div>
+          {/* Subtle Bottom Vignette for the Floating Pill Bar */}
+          <div className="absolute bottom-0 inset-x-0 h-40 bg-gradient-to-t from-[#06140E]/90 via-[#06140E]/40 to-transparent"></div>
         </div>
 
         {/* Hero Main Content (Left Aligned matching reference layout) */}
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full my-auto">
-          <div className="max-w-2xl space-y-6 text-left">
+          <div className="max-w-xl lg:max-w-[560px] space-y-6 text-left">
             
             {/* Tagline / Overline Badge */}
-            <div className="inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full bg-emerald-950/85 border border-emerald-500/40 text-emerald-300 text-xs sm:text-sm font-black uppercase tracking-widest shadow-lg backdrop-blur-md">
+            <div className="inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full bg-emerald-950/90 border border-emerald-500/40 text-emerald-300 text-xs sm:text-sm font-black uppercase tracking-widest shadow-lg backdrop-blur-md">
               <Sparkles className="w-4 h-4 text-emerald-400" />
               <span>Welcome to QCF</span>
             </div>
 
             {/* Main Headline */}
-            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black text-white font-heading tracking-tight leading-[1.18]">
+            <h1 className="text-3xl sm:text-4xl lg:text-[44px] font-black text-white font-heading tracking-tight leading-[1.16] drop-shadow-md">
               The only Quality Assurance Recognition for Future Readiness and Academic Guidance.
             </h1>
 
             {/* Purpose Proposition Sub-descriptor */}
-            <p className="text-emerald-100/90 text-sm sm:text-base lg:text-lg font-medium leading-relaxed max-w-xl">
+            <p className="text-emerald-100/90 text-sm sm:text-base lg:text-lg font-medium leading-relaxed max-w-lg drop-shadow-sm">
               Supporting Institutions Build Strong Career and Academic Guidance Provisions, Ensuring Students’ Future Success and Employability.
             </p>
 
