@@ -87,70 +87,116 @@ export default function HomePage({ onOpenAuth, onSelectRole }) {
         </div>
       </header>
 
-      {/* ─── HERO SECTION ──────────────────────────────────────────────── */}
-      <section className="relative bg-linear-to-b from-[#122E24] via-[#16362B] to-[#0A1A14] text-white pt-16 sm:pt-24 pb-20 sm:pb-28 overflow-hidden">
-        {/* Ambient Decorative Lighting */}
-        <div className="absolute top-0 right-1/4 w-[600px] h-[600px] bg-emerald-500/15 rounded-full blur-3xl pointer-events-none"></div>
-        <div className="absolute bottom-0 left-1/4 w-[500px] h-[500px] bg-teal-500/10 rounded-full blur-3xl pointer-events-none"></div>
+      {/* ─── HERO SECTION (Styled like reference with full background photo & bottom pill bar) ─── */}
+      <section className="relative min-h-[660px] lg:min-h-[740px] flex flex-col justify-between overflow-hidden bg-[#071711] text-white pt-14 sm:pt-20 pb-10 sm:pb-14">
+        {/* Full-width Background Photo of Students */}
+        <div className="absolute inset-0 z-0">
+          <img
+            src="/hero-students.jpg"
+            alt="Students presenting future-ready career solutions"
+            className="w-full h-full object-cover object-[65%_center] sm:object-center"
+          />
+          {/* Multi-layered Gradients for Crystal Clear Text Readability */}
+          <div className="absolute inset-0 bg-gradient-to-r from-[#06140E] via-[#071912]/95 via-45% to-[#071912]/40 sm:to-transparent"></div>
+          <div className="absolute inset-0 bg-gradient-to-t from-[#06140E] via-transparent to-[#071912]/70"></div>
+          <div className="absolute inset-0 bg-[#06140E]/30 sm:bg-transparent"></div>
+        </div>
 
-        <div className="relative z-10 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-8">
-          
-          {/* Badge: Welcome to QCF */}
-          <div className="inline-flex items-center gap-2.5 px-5 py-2 rounded-full bg-emerald-900/80 border border-emerald-500/40 text-emerald-300 text-sm sm:text-base font-black uppercase tracking-widest shadow-inner">
-            <Sparkles className="w-4.5 h-4.5 text-emerald-400" />
-            <span>Welcome to QCF</span>
-          </div>
-
-          {/* Main Headline */}
-          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-black text-white font-heading tracking-tight leading-snug max-w-4xl mx-auto">
-            The only Quality Assurance Recognition for Future Readiness and Academic Guidance.
-          </h1>
-
-          {/* 3 Pillar Trust Badges */}
-          <div className="pt-2 flex flex-wrap items-center justify-center gap-3 sm:gap-4">
-            <div className="flex items-center gap-2.5 px-4 py-2.5 rounded-2xl bg-emerald-950/80 border border-emerald-700/60 shadow-lg text-xs sm:text-sm font-extrabold text-emerald-200">
-              <ShieldCheck className="w-4 h-4 text-emerald-400 shrink-0" />
-              <span>Credible Source of Truth</span>
+        {/* Hero Main Content (Left Aligned matching reference layout) */}
+        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full my-auto">
+          <div className="max-w-2xl space-y-6 text-left">
+            
+            {/* Tagline / Overline Badge */}
+            <div className="inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full bg-emerald-950/85 border border-emerald-500/40 text-emerald-300 text-xs sm:text-sm font-black uppercase tracking-widest shadow-lg backdrop-blur-md">
+              <Sparkles className="w-4 h-4 text-emerald-400" />
+              <span>Welcome to QCF</span>
             </div>
 
-            <div className="flex items-center gap-2.5 px-4 py-2.5 rounded-2xl bg-emerald-950/80 border border-emerald-700/60 shadow-lg text-xs sm:text-sm font-extrabold text-emerald-200">
-              <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
-              <span>Evidenced-backed Strategies</span>
-            </div>
+            {/* Main Headline */}
+            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black text-white font-heading tracking-tight leading-[1.18]">
+              The only Quality Assurance Recognition for Future Readiness and Academic Guidance.
+            </h1>
 
-            <div className="flex items-center gap-2.5 px-4 py-2.5 rounded-2xl bg-emerald-950/80 border border-emerald-700/60 shadow-lg text-xs sm:text-sm font-extrabold text-emerald-200">
-              <Globe className="w-4 h-4 text-emerald-400 shrink-0" />
-              <span>Globally Proven Framework</span>
-            </div>
-          </div>
-
-          {/* Purpose Proposition Banner */}
-          <div className="pt-4 max-w-3xl mx-auto">
-            <p className="text-emerald-200 text-sm sm:text-lg font-bold leading-snug border-l-4 border-emerald-500 pl-4 py-1 text-left bg-emerald-950/40 rounded-r-xl">
+            {/* Purpose Proposition Sub-descriptor */}
+            <p className="text-emerald-100/90 text-sm sm:text-base lg:text-lg font-medium leading-relaxed max-w-xl">
               Supporting Institutions Build Strong Career and Academic Guidance Provisions, Ensuring Students’ Future Success and Employability.
             </p>
+
+            {/* CTA Action Buttons */}
+            <div className="pt-2 flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4">
+              <button
+                onClick={() => onOpenAuth ? onOpenAuth('school', 'signin') : onSelectRole('school')}
+                className="px-6 py-3.5 bg-emerald-500 hover:bg-emerald-400 text-[#0A1A14] font-black text-sm rounded-xl shadow-xl transition-all flex items-center justify-center gap-2 cursor-pointer group"
+              >
+                <span>Access School Workspace</span>
+                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+              </button>
+
+              <button
+                onClick={() => onOpenAuth ? onOpenAuth('school', 'signup') : onSelectRole('school')}
+                className="px-6 py-3.5 bg-white/10 hover:bg-white/15 text-white border border-white/20 hover:border-emerald-400/50 font-bold text-sm rounded-xl backdrop-blur-md transition-all flex items-center justify-center gap-2 cursor-pointer"
+              >
+                <span>Register Your School</span>
+                <ChevronRight className="w-4 h-4 text-emerald-300" />
+              </button>
+            </div>
+
           </div>
-
-          {/* CTA Actions */}
-          <div className="pt-4 flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4">
-            <button
-              onClick={() => onOpenAuth ? onOpenAuth('school', 'signin') : onSelectRole('school')}
-              className="w-full sm:w-auto px-7 py-4 bg-emerald-500 hover:bg-emerald-400 text-[#0A1A14] font-black text-sm rounded-2xl shadow-xl transition-all flex items-center justify-center gap-2 cursor-pointer group"
-            >
-              <span>Access School Workspace</span>
-              <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-            </button>
-
-            <button
-              onClick={() => onOpenAuth ? onOpenAuth('school', 'signup') : onSelectRole('school')}
-              className="w-full sm:w-auto px-7 py-4 bg-white/10 hover:bg-white/15 text-white border border-emerald-400/40 font-bold text-sm rounded-2xl shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer"
-            >
-              <span>Register Your School</span>
-              <ChevronRight className="w-4 h-4 text-emerald-300" />
-            </button>
-          </div>
-
         </div>
+
+        {/* Bottom Floating Frosted Glass Pill Bar (Matching Reference Image) */}
+        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full mt-12 sm:mt-16">
+          <div className="backdrop-blur-xl bg-[#071912]/80 border border-emerald-500/25 rounded-2xl sm:rounded-3xl p-4 sm:p-5 shadow-2xl">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 divide-y sm:divide-y-0 sm:divide-x divide-emerald-800/40">
+              
+              {/* Item 1 */}
+              <div className="flex items-center gap-3.5 px-2 py-1">
+                <div className="w-11 h-11 rounded-2xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-300 flex items-center justify-center shrink-0 shadow-inner">
+                  <ShieldCheck className="w-5 h-5 text-emerald-400" />
+                </div>
+                <div>
+                  <div className="text-xs sm:text-sm font-extrabold text-white font-heading">Credible Source of Truth</div>
+                  <div className="text-[11px] text-emerald-200/70 font-medium">Standardized Gulf Recognition</div>
+                </div>
+              </div>
+
+              {/* Item 2 */}
+              <div className="flex items-center gap-3.5 px-2 py-1 sm:pl-6 pt-3 sm:pt-1">
+                <div className="w-11 h-11 rounded-2xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-300 flex items-center justify-center shrink-0 shadow-inner">
+                  <CheckCircle2 className="w-5 h-5 text-emerald-400" />
+                </div>
+                <div>
+                  <div className="text-xs sm:text-sm font-extrabold text-white font-heading">Evidenced-backed Strategies</div>
+                  <div className="text-[11px] text-emerald-200/70 font-medium">Institutional Quality Assurance</div>
+                </div>
+              </div>
+
+              {/* Item 3 */}
+              <div className="flex items-center gap-3.5 px-2 py-1 sm:pl-6 pt-3 sm:pt-1">
+                <div className="w-11 h-11 rounded-2xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-300 flex items-center justify-center shrink-0 shadow-inner">
+                  <Globe className="w-5 h-5 text-emerald-400" />
+                </div>
+                <div>
+                  <div className="text-xs sm:text-sm font-extrabold text-white font-heading">Globally Proven Framework</div>
+                  <div className="text-[11px] text-emerald-200/70 font-medium">Future-Ready Provisions</div>
+                </div>
+              </div>
+
+              {/* Item 4 */}
+              <div className="flex items-center gap-3.5 px-2 py-1 sm:pl-6 pt-3 sm:pt-1">
+                <div className="w-11 h-11 rounded-2xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-300 flex items-center justify-center shrink-0 shadow-inner">
+                  <Layers className="w-5 h-5 text-emerald-400" />
+                </div>
+                <div>
+                  <div className="text-xs sm:text-sm font-extrabold text-white font-heading">5 Core Domains</div>
+                  <div className="text-[11px] text-emerald-200/70 font-medium">43 Evaluated Quality Standards</div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+
       </section>
 
       {/* ─── ABOUT QCF & CORE MISSION ─────────────────────────────────── */}
