@@ -7,6 +7,7 @@ import InspectorView from './components/InspectorView';
 import AdminView from './components/AdminView';
 import EvidenceModal from './components/EvidenceModal';
 import { DUBAI_SCHOOLS, QCF_STATEMENTS, PATRICIA_SELF_EVALUATION_RATINGS, sortStatements } from './data/qcfData';
+import { DEFAULT_CMS_CONTENT } from './data/defaultCmsContent';
 import { 
   isSupabaseConfigured, 
   getStatementsFromDB, 
@@ -136,6 +137,40 @@ export default function App() {
     }
   }, [statements]);
 
+  // CMS Content state (allows Admin to edit live copy across Landing Page & School Sign-In)
+  const [cmsContent, setCmsContent] = useState(() => {
+    try {
+      const saved = localStorage.getItem('qcf_cms_content');
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (parsed && typeof parsed === 'object') {
+          return { ...DEFAULT_CMS_CONTENT, ...parsed };
+        }
+      }
+    } catch (e) {
+      console.error('Error reading qcf_cms_content from localStorage:', e);
+    }
+    return DEFAULT_CMS_CONTENT;
+  });
+
+  const handleUpdateCms = (updatedContent) => {
+    setCmsContent(updatedContent);
+    try {
+      localStorage.setItem('qcf_cms_content', JSON.stringify(updatedContent));
+    } catch (e) {
+      console.error('Error saving qcf_cms_content:', e);
+    }
+  };
+
+  const handleResetCms = () => {
+    setCmsContent(DEFAULT_CMS_CONTENT);
+    try {
+      localStorage.removeItem('qcf_cms_content');
+    } catch (e) {
+      console.error('Error clearing qcf_cms_content:', e);
+    }
+  };
+
   const defaultDubaiRatings = {
     'stmt-1_1': 4, 'stmt-1_2': 5, 'stmt-1_3': 3, 'stmt-1_4': 4, 'stmt-1_5': 4,
     'stmt-1_6': 5, 'stmt-1_7': 4, 'stmt-1_8': 3, 'stmt-1_9': 4, 'stmt-2_1': 5,
@@ -263,6 +298,7 @@ export default function App() {
     if (viewMode === 'home') {
       return (
         <HomePage 
+          cmsContent={cmsContent}
           onOpenAuth={(tab = 'school', mode = 'signin') => {
             setAuthConfig({ tab, mode });
             setViewMode('portal_auth');
@@ -274,6 +310,7 @@ export default function App() {
 
     return (
       <RoleSelectionLanding 
+        cmsContent={cmsContent}
         onBackToHome={() => setViewMode('home')}
         initialTab={authConfig.tab}
         initialAuthMode={authConfig.mode}
@@ -335,6 +372,12 @@ export default function App() {
             inspectorVerdicts={inspectorVerdicts}
             inspectorNotes={inspectorNotes}
             evidenceList={evidenceList}
+            cmsContent={cmsContent}
+            onUpdateCms={handleUpdateCms}
+            onResetCms={handleResetCms}
+            onNavigateHome={() => {
+              handleLogout();
+            }}
           />
         )}
       </main>

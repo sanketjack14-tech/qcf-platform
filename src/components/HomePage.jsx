@@ -22,7 +22,11 @@ import {
   LayoutDashboard
 } from 'lucide-react';
 
-export default function HomePage({ onOpenAuth, onSelectRole }) {
+import { DEFAULT_CMS_CONTENT } from '../data/defaultCmsContent';
+
+export default function HomePage({ onOpenAuth, onSelectRole, cmsContent = {} }) {
+  const cms = { ...DEFAULT_CMS_CONTENT, ...cmsContent };
+
   const scrollToSection = (id) => {
     const el = document.getElementById(id);
     if (el) {
@@ -102,13 +106,13 @@ export default function HomePage({ onOpenAuth, onSelectRole }) {
             
             {/* Main Headline across two lines */}
             <h1 className="text-3xl sm:text-5xl lg:text-6xl font-black text-white font-heading tracking-tight leading-[1.12] drop-shadow-md">
-              Future-ready Schools.<br />
-              Future Ready Students.
+              {cms.heroHeadlineLine1}<br />
+              {cms.heroHeadlineLine2}
             </h1>
 
             {/* Sub-descriptor in smaller text */}
             <p className="text-emerald-100/90 text-sm sm:text-base lg:text-lg font-medium leading-relaxed max-w-lg drop-shadow-sm">
-              The only Quality Assurance Recognition for Future Readiness and Academic Guidance.
+              {cms.heroSubtext}
             </p>
 
             {/* CTA Action Buttons */}
@@ -117,7 +121,7 @@ export default function HomePage({ onOpenAuth, onSelectRole }) {
                 onClick={() => onOpenAuth ? onOpenAuth('school', 'signin') : onSelectRole('school')}
                 className="px-6 py-3.5 bg-emerald-500 hover:bg-emerald-400 text-[#0A1A14] font-black text-sm rounded-xl shadow-xl transition-all flex items-center justify-center gap-2 cursor-pointer group"
               >
-                <span>Access School Workspace</span>
+                <span>{cms.heroCtaPrimary}</span>
                 <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
               </button>
 
@@ -125,7 +129,7 @@ export default function HomePage({ onOpenAuth, onSelectRole }) {
                 onClick={() => onOpenAuth ? onOpenAuth('school', 'signup') : onSelectRole('school')}
                 className="px-6 py-3.5 bg-white/10 hover:bg-white/15 text-white border border-white/20 hover:border-emerald-400/50 font-bold text-sm rounded-xl backdrop-blur-md transition-all flex items-center justify-center gap-2 cursor-pointer"
               >
-                <span>Register Your School</span>
+                <span>{cms.heroCtaSecondary}</span>
                 <ChevronRight className="w-4 h-4 text-emerald-300" />
               </button>
             </div>
@@ -141,10 +145,10 @@ export default function HomePage({ onOpenAuth, onSelectRole }) {
           
           <div className="max-w-3xl mx-auto text-center space-y-4 mb-16">
             <h2 className="text-2xl sm:text-4xl font-black text-gray-900 font-heading">
-              Why the Quality Career Framework Exists
+              {cms.aboutTitle}
             </h2>
             <p className="text-base sm:text-lg text-gray-700 font-medium leading-relaxed">
-              The Quality Career Framework (QCF) exists to help schools develop future-focused learning environments that empower students with the support and guidance needed to pursue and excel in a fulfilling and impactful career.
+              {cms.aboutDescription}
             </p>
           </div>
 
@@ -158,10 +162,10 @@ export default function HomePage({ onOpenAuth, onSelectRole }) {
                   <FileCheck2 className="w-6 h-6 text-emerald-300" />
                 </div>
                 <h3 className="text-lg font-bold text-gray-900 font-heading">
-                  Commitment at the Core
+                  {cms.aboutCard1Title}
                 </h3>
                 <p className="text-xs sm:text-sm text-gray-600 leading-relaxed">
-                  Through performing a self-evaluation and achieving the QCF recognition, schools demonstrate their commitment to embedding Future Readiness and Academic Guidance at the core of education.
+                  {cms.aboutCard1Text}
                 </p>
               </div>
             </div>
@@ -173,10 +177,10 @@ export default function HomePage({ onOpenAuth, onSelectRole }) {
                   <Compass className="w-6 h-6 text-emerald-300" />
                 </div>
                 <h3 className="text-lg font-bold text-gray-900 font-heading">
-                  Clear Pathway for Leaders
+                  {cms.aboutCard2Title}
                 </h3>
                 <p className="text-xs sm:text-sm text-gray-600 leading-relaxed">
-                  For school leaders, the QCF offers both recognition and a practical framework for guiding students on the pathway of career exploring and academic guidance. QCF provides a clear pathway to assess, improve and recognize quality Future Readiness in your school.
+                  {cms.aboutCard2Text}
                 </p>
               </div>
             </div>
@@ -188,10 +192,10 @@ export default function HomePage({ onOpenAuth, onSelectRole }) {
                   <Users className="w-6 h-6 text-emerald-300" />
                 </div>
                 <h3 className="text-lg font-bold text-gray-900 font-heading">
-                  Beyond the Credential
+                  {cms.aboutCard3Title}
                 </h3>
                 <p className="text-xs sm:text-sm text-gray-600 leading-relaxed">
-                  Becoming a QCF partner school connects your school to a national and international network of career readiness and future planning experts. It drives sustainable improvement, builds staff confidence, and reassures stakeholders that your education approach is robust, evidence-based, and future-ready.
+                  {cms.aboutCard3Text}
                 </p>
               </div>
             </div>
@@ -202,7 +206,7 @@ export default function HomePage({ onOpenAuth, onSelectRole }) {
           <div className="mt-12 bg-linear-to-r from-[#16362B] to-[#2C6450] text-white p-6 sm:p-8 rounded-3xl shadow-xl flex flex-col md:flex-row items-center justify-between gap-6">
             <div className="space-y-2 text-left">
               <p className="text-sm sm:text-base font-bold text-emerald-100 max-w-3xl">
-                By launching the QCF journey at your school, you join a global movement of schools recentering education to focus on real impact. Committing to the future readiness of its students.
+                {cms.aboutBannerText}
               </p>
             </div>
 
@@ -210,7 +214,7 @@ export default function HomePage({ onOpenAuth, onSelectRole }) {
               onClick={() => onOpenAuth ? onOpenAuth('school', 'signup') : onSelectRole('school')}
               className="px-6 py-3.5 bg-emerald-400 hover:bg-emerald-300 text-emerald-950 font-black text-xs rounded-xl shadow-md transition-all shrink-0 cursor-pointer flex items-center gap-2"
             >
-              <span>Begin Your School Journey</span>
+              <span>{cms.aboutBannerCta}</span>
               <ArrowRight className="w-4 h-4" />
             </button>
           </div>
@@ -224,10 +228,10 @@ export default function HomePage({ onOpenAuth, onSelectRole }) {
           
           <div className="max-w-3xl mx-auto text-center space-y-4 mb-16">
             <h2 className="text-2xl sm:text-4xl font-black text-gray-900 font-heading">
-              Who Is QCF Recognition For?
+              {cms.audienceTitle}
             </h2>
             <p className="text-sm sm:text-base text-gray-700 font-medium leading-relaxed">
-              QCF Recognition is designed for forward-thinking schools and educational institutions committed to embedding future readiness into their educational culture, strategic priorities, and student learning experiences.
+              {cms.audienceDescription}
             </p>
           </div>
 
@@ -238,10 +242,10 @@ export default function HomePage({ onOpenAuth, onSelectRole }) {
                 <School className="w-6 h-6 text-emerald-700" />
               </div>
               <h3 className="text-base font-bold text-gray-900 font-heading">
-                All School Structures
+                {cms.audienceCard1Title}
               </h3>
               <p className="text-xs sm:text-sm text-gray-600 leading-relaxed">
-                Public, Private and international schools and learning institutions.
+                {cms.audienceCard1Text}
               </p>
             </div>
 
@@ -250,10 +254,10 @@ export default function HomePage({ onOpenAuth, onSelectRole }) {
                 <BookOpen className="w-6 h-6 text-emerald-700" />
               </div>
               <h3 className="text-base font-bold text-gray-900 font-heading">
-                Diverse Curricula
+                {cms.audienceCard2Title}
               </h3>
               <p className="text-xs sm:text-sm text-gray-600 leading-relaxed">
-                Schools offering a recognized international or national curricula.
+                {cms.audienceCard2Text}
               </p>
             </div>
 
@@ -262,10 +266,10 @@ export default function HomePage({ onOpenAuth, onSelectRole }) {
                 <Sparkles className="w-6 h-6 text-emerald-700" />
               </div>
               <h3 className="text-base font-bold text-gray-900 font-heading">
-                New & Established Institutions
+                {cms.audienceCard3Title}
               </h3>
               <p className="text-xs sm:text-sm text-gray-600 leading-relaxed">
-                New and established schools seeking to strengthen or validate their future-readiness provision.
+                {cms.audienceCard3Text}
               </p>
             </div>
 
@@ -280,10 +284,10 @@ export default function HomePage({ onOpenAuth, onSelectRole }) {
           
           <div className="max-w-3xl mx-auto text-center space-y-4 mb-16">
             <h2 className="text-2xl sm:text-4xl font-black text-gray-900 font-heading">
-              QCF Phases & Recognition
+              {cms.phasesTitle}
             </h2>
             <p className="text-sm sm:text-base text-gray-600 font-medium">
-              An evidence-based, 3-phase journey that celebrates institutional commitment from initial self-reflection to verified distinguished excellence.
+              {cms.phasesDescription}
             </p>
           </div>
 
@@ -301,21 +305,21 @@ export default function HomePage({ onOpenAuth, onSelectRole }) {
 
                 <div className="pt-2">
                   <h3 className="text-lg font-black text-gray-900 font-heading">
-                    Self-Evaluation & Verification
+                    {cms.phase1Title}
                   </h3>
                   <div className="text-xs font-extrabold text-emerald-800 mt-1">
-                    (QCF Member Schools)
+                    {cms.phase1Badge}
                   </div>
                 </div>
 
                 <p className="text-xs sm:text-sm text-gray-600 leading-relaxed pt-2">
-                  Recognizes schools demonstrating awareness of future-readiness priorities, institutional self-reflection, and a clear interest in developing their provision.
+                  {cms.phase1Text}
                 </p>
               </div>
 
               <div className="pt-6 mt-6 border-t border-gray-100 flex items-center gap-2 text-[11px] font-bold text-emerald-800">
                 <CheckCircle className="w-4 h-4 text-emerald-600 shrink-0" />
-                <span>Foundational Self-Evaluation Stage</span>
+                <span>{cms.phase1Tag}</span>
               </div>
             </div>
 
@@ -331,21 +335,21 @@ export default function HomePage({ onOpenAuth, onSelectRole }) {
 
                 <div className="pt-2">
                   <h3 className="text-lg font-black text-gray-900 font-heading">
-                    Strengthening & Commitment
+                    {cms.phase2Title}
                   </h3>
                   <div className="text-xs font-extrabold text-emerald-800 mt-1">
-                    (QCF Champion School)
+                    {cms.phase2Badge}
                   </div>
                 </div>
 
                 <p className="text-xs sm:text-sm text-gray-600 leading-relaxed pt-2">
-                  Recognizes schools demonstrating tangible commitment through strategic planning, dedicated resources, leadership ownership, and investment in future-readiness initiatives.
+                  {cms.phase2Text}
                 </p>
               </div>
 
               <div className="pt-6 mt-6 border-t border-gray-100 flex items-center gap-2 text-[11px] font-bold text-emerald-800">
                 <CheckCircle className="w-4 h-4 text-emerald-600 shrink-0" />
-                <span>Active Institutional Transformation</span>
+                <span>{cms.phase2Tag}</span>
               </div>
             </div>
 
@@ -361,21 +365,21 @@ export default function HomePage({ onOpenAuth, onSelectRole }) {
 
                 <div className="pt-2">
                   <h3 className="text-lg font-black text-white font-heading">
-                    Excellence Consistently Evidenced
+                    {cms.phase3Title}
                   </h3>
                   <div className="text-xs font-extrabold text-emerald-300 mt-1">
-                    (QCF School of Excellence)
+                    {cms.phase3Badge}
                   </div>
                 </div>
 
                 <p className="text-xs sm:text-sm text-emerald-100 leading-relaxed pt-2">
-                  Recognizes schools consistently demonstrating exceptional, measurable, and independently verified outcomes in future-readiness education.
+                  {cms.phase3Text}
                 </p>
               </div>
 
               <div className="pt-6 mt-6 border-t border-emerald-800 flex items-center gap-2 text-[11px] font-bold text-emerald-300">
                 <Award className="w-4 h-4 text-emerald-400 shrink-0" />
-                <span>Benchmark Distinction Recognition</span>
+                <span>{cms.phase3Tag}</span>
               </div>
             </div>
 
@@ -402,10 +406,10 @@ export default function HomePage({ onOpenAuth, onSelectRole }) {
 
           <div className="flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-left text-[11px] text-emerald-400/80 font-medium">
             <div>
-              Quality Careers Framework (QCF) • Academic Guidance & Career Readiness Schools’ Self-Evaluation © 2026
+              {cms.footerCopyright}
             </div>
             <div>
-              The Gulf Region Future Readiness Recognition Standard
+              {cms.footerTagline}
             </div>
           </div>
         </div>

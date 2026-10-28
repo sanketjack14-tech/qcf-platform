@@ -2,13 +2,15 @@ import React, { useState } from 'react';
 import { 
   LayoutDashboard, School, ShieldCheck, Users, TrendingUp, Award, 
   UserPlus, Search, Filter, CheckCircle2, Clock, AlertCircle, Sparkles, 
-  Eye, EyeOff, Edit3, Plus, Save, X, FileText, Check, Settings2, FileCheck2 
+  Eye, EyeOff, Edit3, Plus, Save, X, FileText, Check, Settings2, FileCheck2,
+  Globe, RotateCcw, ExternalLink, Compass, BookOpen, Layers, CheckCircle
 } from 'lucide-react';
 import { 
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, 
   PieChart, Pie, Cell, Legend 
 } from 'recharts';
 import { INSPECTORS, QCF_DOMAINS, QCF_STATEMENTS, sortStatements } from '../data/qcfData';
+import { DEFAULT_CMS_CONTENT } from '../data/defaultCmsContent';
 import { saveStatementToDB } from '../lib/supabaseClient';
 import EvaluationReportModal from './EvaluationReportModal';
 
@@ -21,9 +23,13 @@ export default function AdminView({
   inspectorRatings = {},
   inspectorVerdicts = {},
   inspectorNotes = {},
-  evidenceList = []
+  evidenceList = [],
+  cmsContent = {},
+  onUpdateCms,
+  onResetCms,
+  onNavigateHome
 }) {
-  const [activeTab, setActiveTab] = useState('dashboard'); // 'dashboard' | 'questions'
+  const [activeTab, setActiveTab] = useState('dashboard'); // 'dashboard' | 'questions' | 'cms'
   const [searchTerm, setSearchTerm] = useState('');
   const [filterStatus, setFilterStatus] = useState('All');
 
@@ -52,6 +58,63 @@ export default function AdminView({
 
   // Feedback Notification Toast
   const [toastMessage, setToastMessage] = useState(null);
+
+  // CMS Content Management State
+  const [cmsData, setCmsData] = useState(() => ({
+    ...DEFAULT_CMS_CONTENT,
+    ...(cmsContent || {})
+  }));
+  const [cmsSectionFilter, setCmsSectionFilter] = useState('all');
+  const [isCmsDirty, setIsCmsDirty] = useState(false);
+  const [isConfirmCmsResetOpen, setIsConfirmCmsResetOpen] = useState(false);
+
+  // Synchronize when cmsContent prop changes
+  React.useEffect(() => {
+    if (cmsContent && Object.keys(cmsContent).length > 0) {
+      setCmsData(prev => ({
+        ...DEFAULT_CMS_CONTENT,
+        ...cmsContent
+      }));
+    }
+  }, [cmsContent]);
+
+  const handleCmsFieldChange = (field, value) => {
+    setCmsData(prev => ({ ...prev, [field]: value }));
+    setIsCmsDirty(true);
+  };
+
+  const handleSaveCmsChanges = () => {
+    if (onUpdateCms) {
+      onUpdateCms(cmsData);
+    }
+    setIsCmsDirty(false);
+    setToastMessage('Site content successfully saved! Live Landing Page & School Sign-In have been updated.');
+    setTimeout(() => setToastMessage(null), 4000);
+  };
+
+  const handleResetCmsToDefaults = () => {
+    if (onResetCms) {
+      onResetCms();
+    }
+    setCmsData(DEFAULT_CMS_CONTENT);
+    setIsCmsDirty(false);
+    setIsConfirmCmsResetOpen(false);
+    setToastMessage('Site content reset to factory defaults.');
+    setTimeout(() => setToastMessage(null), 4000);
+  };
+
+  const handleResetSection = (fieldList) => {
+    setCmsData(prev => {
+      const updated = { ...prev };
+      fieldList.forEach(f => {
+        updated[f] = DEFAULT_CMS_CONTENT[f];
+      });
+      return updated;
+    });
+    setIsCmsDirty(true);
+    setToastMessage('Section copy reset to default (click "Save Changes" to apply).');
+    setTimeout(() => setToastMessage(null), 3000);
+  };
 
   // Form states for Add/Edit
   const [formCode, setFormCode] = useState('');
@@ -318,6 +381,21 @@ export default function AdminView({
           >
             <Settings2 className="w-4 h-4" />
             <span>KHDA Standards Manager ({statements.length})</span>
+          </button>
+
+          <button
+            onClick={() => setActiveTab('cms')}
+            className={`px-4 py-2 rounded-xl font-bold text-xs flex items-center gap-2 transition-all cursor-pointer relative ${
+              activeTab === 'cms'
+                ? 'bg-emerald-600 text-white shadow-md'
+                : 'text-emerald-200 hover:text-white hover:bg-emerald-800/60'
+            }`}
+          >
+            <Globe className="w-4 h-4" />
+            <span>Site Content (CMS)</span>
+            {isCmsDirty && (
+              <span className="w-2 h-2 rounded-full bg-amber-400 ring-2 ring-emerald-950 animate-pulse"></span>
+            )}
           </button>
         </div>
       </div>
@@ -699,6 +777,831 @@ export default function AdminView({
         </div>
       )}
 
+      {/* TAB 3: SITE CONTENT MANAGEMENT SYSTEM (CMS) */}
+      {activeTab === 'cms' && (
+        <div className="space-y-6 animate-in fade-in duration-150 pb-24">
+          
+          {/* Top CMS Control Bar */}
+          <div className="bg-white rounded-2xl p-6 border border-emerald-100 shadow-xs flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4">
+            <div className="space-y-1">
+              <div className="flex items-center gap-3">
+                <h2 className="text-lg font-black text-gray-900 font-heading flex items-center gap-2">
+                  <Globe className="w-5 h-5 text-emerald-700" />
+                  <span>Site Content Management System (CMS)</span>
+                </h2>
+                {isCmsDirty ? (
+                  <span className="bg-amber-100 text-amber-900 border border-amber-300 text-[11px] font-extrabold px-2.5 py-0.5 rounded-full flex items-center gap-1.5 animate-pulse">
+                    <span className="w-1.5 h-1.5 rounded-full bg-amber-500"></span>
+                    Unsaved Content Changes
+                  </span>
+                ) : (
+                  <span className="bg-emerald-100 text-emerald-900 border border-emerald-300 text-[11px] font-extrabold px-2.5 py-0.5 rounded-full flex items-center gap-1.5">
+                    <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
+                    All Live Changes Saved
+                  </span>
+                )}
+              </div>
+              <p className="text-xs text-gray-500">
+                Update headlines, descriptive copy, and CTA text for both the public Landing Page and School Sign-In portal. Changes persist immediately in local storage.
+              </p>
+            </div>
+
+            {/* Quick Actions */}
+            <div className="flex flex-wrap items-center gap-2 shrink-0">
+              {onNavigateHome && (
+                <button
+                  type="button"
+                  onClick={onNavigateHome}
+                  className="px-3.5 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold text-xs rounded-xl flex items-center gap-1.5 transition-colors cursor-pointer"
+                  title="View the public landing page"
+                >
+                  <ExternalLink className="w-3.5 h-3.5" />
+                  <span>Preview Landing Page</span>
+                </button>
+              )}
+
+              <button
+                type="button"
+                onClick={() => setIsConfirmCmsResetOpen(true)}
+                className="px-3.5 py-2.5 bg-amber-50 hover:bg-amber-100 border border-amber-200 text-amber-900 font-bold text-xs rounded-xl flex items-center gap-1.5 transition-colors cursor-pointer"
+                title="Reset all site text to original default copy"
+              >
+                <RotateCcw className="w-3.5 h-3.5 text-amber-700" />
+                <span>Reset All Defaults</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={handleSaveCmsChanges}
+                className="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs rounded-xl shadow-md flex items-center gap-2 transition-all cursor-pointer hover:shadow-lg"
+              >
+                <Save className="w-4 h-4" />
+                <span>Save Content Changes</span>
+              </button>
+            </div>
+          </div>
+
+          {/* Section Filter Pills */}
+          <div className="flex flex-wrap items-center gap-2 bg-white p-3 rounded-2xl border border-emerald-100 shadow-xs">
+            <span className="text-xs font-bold text-gray-500 px-2 uppercase tracking-wider">Jump To Section:</span>
+            {[
+              { id: 'all', label: 'All Sections', icon: Layers },
+              { id: 'hero', label: 'Hero Section', icon: Sparkles },
+              { id: 'about', label: 'Why QCF Exists (About)', icon: BookOpen },
+              { id: 'audience', label: 'Target Institutions (Audience)', icon: Users },
+              { id: 'phases', label: 'Phases & Recognition', icon: Award },
+              { id: 'school', label: 'School Sign-In Page', icon: School },
+              { id: 'footer', label: 'Footer & Disclaimer', icon: ShieldCheck }
+            ].map((tab) => {
+              const TabIcon = tab.icon;
+              return (
+                <button
+                  key={tab.id}
+                  onClick={() => setCmsSectionFilter(tab.id)}
+                  className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer ${
+                    cmsSectionFilter === tab.id
+                      ? 'bg-emerald-700 text-white shadow-xs'
+                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  }`}
+                >
+                  <TabIcon className="w-3.5 h-3.5" />
+                  <span>{tab.label}</span>
+                </button>
+              );
+            })}
+          </div>
+
+          {/* SECTION 1: HERO SECTION */}
+          {(cmsSectionFilter === 'all' || cmsSectionFilter === 'hero') && (
+            <div className="bg-white rounded-2xl p-6 border border-emerald-100 shadow-xs space-y-5">
+              <div className="flex items-center justify-between pb-3 border-b border-gray-100">
+                <div className="flex items-center gap-3">
+                  <div className="w-9 h-9 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 flex items-center justify-center font-bold">
+                    <Sparkles className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <h3 className="text-sm font-black text-gray-900 font-heading">Hero Section (Landing Page)</h3>
+                    <p className="text-xs text-gray-500">Above-the-fold headline, value proposition statement, and primary CTA buttons</p>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => handleResetSection(['heroHeadlineLine1', 'heroHeadlineLine2', 'heroSubtext', 'heroCtaPrimary', 'heroCtaSecondary'])}
+                  className="text-xs text-gray-500 hover:text-amber-800 font-bold flex items-center gap-1 cursor-pointer bg-gray-50 hover:bg-amber-50 px-2.5 py-1.5 rounded-lg border border-gray-200 transition-colors"
+                >
+                  <RotateCcw className="w-3 h-3" />
+                  <span>Reset Hero</span>
+                </button>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1.5">
+                    Main Headline (Line 1)
+                  </label>
+                  <input
+                    type="text"
+                    value={cmsData.heroHeadlineLine1 || ''}
+                    onChange={(e) => handleCmsFieldChange('heroHeadlineLine1', e.target.value)}
+                    className="w-full text-xs font-semibold p-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-emerald-600 bg-gray-50/50"
+                    placeholder="Future-ready Schools."
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1.5">
+                    Main Headline (Line 2)
+                  </label>
+                  <input
+                    type="text"
+                    value={cmsData.heroHeadlineLine2 || ''}
+                    onChange={(e) => handleCmsFieldChange('heroHeadlineLine2', e.target.value)}
+                    className="w-full text-xs font-semibold p-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-emerald-600 bg-gray-50/50"
+                    placeholder="Future Ready Students."
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1.5">
+                  Sub-descriptor / Quality Assurance Value Proposition
+                </label>
+                <textarea
+                  rows={2}
+                  value={cmsData.heroSubtext || ''}
+                  onChange={(e) => handleCmsFieldChange('heroSubtext', e.target.value)}
+                  className="w-full text-xs font-medium p-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-emerald-600 bg-gray-50/50 leading-relaxed"
+                  placeholder="The only Quality Assurance Recognition for Future Readiness and Academic Guidance."
+                />
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-1">
+                <div>
+                  <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1.5">
+                    Primary CTA Button Text (Green Pill)
+                  </label>
+                  <input
+                    type="text"
+                    value={cmsData.heroCtaPrimary || ''}
+                    onChange={(e) => handleCmsFieldChange('heroCtaPrimary', e.target.value)}
+                    className="w-full text-xs font-semibold p-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-emerald-600 bg-gray-50/50"
+                    placeholder="Access School Workspace"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1.5">
+                    Secondary CTA Button Text (Outline Pill)
+                  </label>
+                  <input
+                    type="text"
+                    value={cmsData.heroCtaSecondary || ''}
+                    onChange={(e) => handleCmsFieldChange('heroCtaSecondary', e.target.value)}
+                    className="w-full text-xs font-semibold p-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-emerald-600 bg-gray-50/50"
+                    placeholder="Register Your School"
+                  />
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* SECTION 2: WHY THE QCF EXISTS (ABOUT) */}
+          {(cmsSectionFilter === 'all' || cmsSectionFilter === 'about') && (
+            <div className="bg-white rounded-2xl p-6 border border-emerald-100 shadow-xs space-y-5">
+              <div className="flex items-center justify-between pb-3 border-b border-gray-100">
+                <div className="flex items-center gap-3">
+                  <div className="w-9 h-9 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 flex items-center justify-center font-bold">
+                    <BookOpen className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <h3 className="text-sm font-black text-gray-900 font-heading">Why the QCF Exists (About Section)</h3>
+                    <p className="text-xs text-gray-500">Mission statement heading, main paragraph, three narrative pillars, and bottom banner</p>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => handleResetSection([
+                    'aboutTitle', 'aboutDescription',
+                    'aboutCard1Title', 'aboutCard1Text',
+                    'aboutCard2Title', 'aboutCard2Text',
+                    'aboutCard3Title', 'aboutCard3Text',
+                    'aboutBannerText', 'aboutBannerCta'
+                  ])}
+                  className="text-xs text-gray-500 hover:text-amber-800 font-bold flex items-center gap-1 cursor-pointer bg-gray-50 hover:bg-amber-50 px-2.5 py-1.5 rounded-lg border border-gray-200 transition-colors"
+                >
+                  <RotateCcw className="w-3 h-3" />
+                  <span>Reset About</span>
+                </button>
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1.5">
+                  Section Headline
+                </label>
+                <input
+                  type="text"
+                  value={cmsData.aboutTitle || ''}
+                  onChange={(e) => handleCmsFieldChange('aboutTitle', e.target.value)}
+                  className="w-full text-xs font-semibold p-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-emerald-600 bg-gray-50/50"
+                  placeholder="Why the Quality Career Framework Exists"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1.5">
+                  Core Mission Statement (Paragraph)
+                </label>
+                <textarea
+                  rows={3}
+                  value={cmsData.aboutDescription || ''}
+                  onChange={(e) => handleCmsFieldChange('aboutDescription', e.target.value)}
+                  className="w-full text-xs font-medium p-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-emerald-600 bg-gray-50/50 leading-relaxed"
+                />
+              </div>
+
+              {/* 3 Pillar Cards */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-2">
+                <div className="bg-gray-50 p-4 rounded-xl border border-gray-200 space-y-3">
+                  <div className="text-xs font-black text-emerald-800">Pillar Card 1</div>
+                  <div>
+                    <label className="block text-[11px] font-bold text-gray-600 mb-1">Title</label>
+                    <input
+                      type="text"
+                      value={cmsData.aboutCard1Title || ''}
+                      onChange={(e) => handleCmsFieldChange('aboutCard1Title', e.target.value)}
+                      className="w-full text-xs font-bold p-2.5 rounded-lg border border-gray-200 bg-white focus:outline-none focus:ring-2 focus:ring-emerald-600"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-[11px] font-bold text-gray-600 mb-1">Description</label>
+                    <textarea
+                      rows={4}
+                      value={cmsData.aboutCard1Text || ''}
+                      onChange={(e) => handleCmsFieldChange('aboutCard1Text', e.target.value)}
+                      className="w-full text-xs font-medium p-2.5 rounded-lg border border-gray-200 bg-white focus:outline-none focus:ring-2 focus:ring-emerald-600 leading-relaxed"
+                    />
+                  </div>
+                </div>
+
+                <div className="bg-gray-50 p-4 rounded-xl border border-gray-200 space-y-3">
+                  <div className="text-xs font-black text-emerald-800">Pillar Card 2</div>
+                  <div>
+                    <label className="block text-[11px] font-bold text-gray-600 mb-1">Title</label>
+                    <input
+                      type="text"
+                      value={cmsData.aboutCard2Title || ''}
+                      onChange={(e) => handleCmsFieldChange('aboutCard2Title', e.target.value)}
+                      className="w-full text-xs font-bold p-2.5 rounded-lg border border-gray-200 bg-white focus:outline-none focus:ring-2 focus:ring-emerald-600"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-[11px] font-bold text-gray-600 mb-1">Description</label>
+                    <textarea
+                      rows={4}
+                      value={cmsData.aboutCard2Text || ''}
+                      onChange={(e) => handleCmsFieldChange('aboutCard2Text', e.target.value)}
+                      className="w-full text-xs font-medium p-2.5 rounded-lg border border-gray-200 bg-white focus:outline-none focus:ring-2 focus:ring-emerald-600 leading-relaxed"
+                    />
+                  </div>
+                </div>
+
+                <div className="bg-gray-50 p-4 rounded-xl border border-gray-200 space-y-3">
+                  <div className="text-xs font-black text-emerald-800">Pillar Card 3</div>
+                  <div>
+                    <label className="block text-[11px] font-bold text-gray-600 mb-1">Title</label>
+                    <input
+                      type="text"
+                      value={cmsData.aboutCard3Title || ''}
+                      onChange={(e) => handleCmsFieldChange('aboutCard3Title', e.target.value)}
+                      className="w-full text-xs font-bold p-2.5 rounded-lg border border-gray-200 bg-white focus:outline-none focus:ring-2 focus:ring-emerald-600"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-[11px] font-bold text-gray-600 mb-1">Description</label>
+                    <textarea
+                      rows={4}
+                      value={cmsData.aboutCard3Text || ''}
+                      onChange={(e) => handleCmsFieldChange('aboutCard3Text', e.target.value)}
+                      className="w-full text-xs font-medium p-2.5 rounded-lg border border-gray-200 bg-white focus:outline-none focus:ring-2 focus:ring-emerald-600 leading-relaxed"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Global Movement Banner */}
+              <div className="bg-emerald-900/10 border border-emerald-300 p-4 rounded-xl space-y-3">
+                <div className="text-xs font-black text-emerald-900">Bottom Global Movement Banner</div>
+                <div>
+                  <label className="block text-[11px] font-bold text-gray-700 mb-1">Banner Statement</label>
+                  <textarea
+                    rows={2}
+                    value={cmsData.aboutBannerText || ''}
+                    onChange={(e) => handleCmsFieldChange('aboutBannerText', e.target.value)}
+                    className="w-full text-xs font-medium p-2.5 rounded-lg border border-gray-200 bg-white focus:outline-none focus:ring-2 focus:ring-emerald-600 leading-relaxed"
+                  />
+                </div>
+                <div>
+                  <label className="block text-[11px] font-bold text-gray-700 mb-1">Banner Button CTA</label>
+                  <input
+                    type="text"
+                    value={cmsData.aboutBannerCta || ''}
+                    onChange={(e) => handleCmsFieldChange('aboutBannerCta', e.target.value)}
+                    className="w-full text-xs font-bold p-2.5 rounded-lg border border-gray-200 bg-white focus:outline-none focus:ring-2 focus:ring-emerald-600"
+                    placeholder="Begin Your School Journey"
+                  />
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* SECTION 3: TARGET AUDIENCE */}
+          {(cmsSectionFilter === 'all' || cmsSectionFilter === 'audience') && (
+            <div className="bg-white rounded-2xl p-6 border border-emerald-100 shadow-xs space-y-5">
+              <div className="flex items-center justify-between pb-3 border-b border-gray-100">
+                <div className="flex items-center gap-3">
+                  <div className="w-9 h-9 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 flex items-center justify-center font-bold">
+                    <Users className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <h3 className="text-sm font-black text-gray-900 font-heading">Who Is QCF Recognition For? (Audience)</h3>
+                    <p className="text-xs text-gray-500">Target institutions heading, sub-descriptor, and three audience category cards</p>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => handleResetSection([
+                    'audienceTitle', 'audienceDescription',
+                    'audienceCard1Title', 'audienceCard1Text',
+                    'audienceCard2Title', 'audienceCard2Text',
+                    'audienceCard3Title', 'audienceCard3Text'
+                  ])}
+                  className="text-xs text-gray-500 hover:text-amber-800 font-bold flex items-center gap-1 cursor-pointer bg-gray-50 hover:bg-amber-50 px-2.5 py-1.5 rounded-lg border border-gray-200 transition-colors"
+                >
+                  <RotateCcw className="w-3 h-3" />
+                  <span>Reset Audience</span>
+                </button>
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1.5">
+                  Section Headline
+                </label>
+                <input
+                  type="text"
+                  value={cmsData.audienceTitle || ''}
+                  onChange={(e) => handleCmsFieldChange('audienceTitle', e.target.value)}
+                  className="w-full text-xs font-semibold p-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-emerald-600 bg-gray-50/50"
+                  placeholder="Who Is QCF Recognition For?"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1.5">
+                  Section Subtitle / Description
+                </label>
+                <textarea
+                  rows={2}
+                  value={cmsData.audienceDescription || ''}
+                  onChange={(e) => handleCmsFieldChange('audienceDescription', e.target.value)}
+                  className="w-full text-xs font-medium p-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-emerald-600 bg-gray-50/50 leading-relaxed"
+                />
+              </div>
+
+              {/* 3 Audience Cards */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-2">
+                <div className="bg-gray-50 p-4 rounded-xl border border-gray-200 space-y-3">
+                  <div className="text-xs font-black text-emerald-800">Audience Card 1</div>
+                  <div>
+                    <label className="block text-[11px] font-bold text-gray-600 mb-1">Title</label>
+                    <input
+                      type="text"
+                      value={cmsData.audienceCard1Title || ''}
+                      onChange={(e) => handleCmsFieldChange('audienceCard1Title', e.target.value)}
+                      className="w-full text-xs font-bold p-2.5 rounded-lg border border-gray-200 bg-white focus:outline-none focus:ring-2 focus:ring-emerald-600"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-[11px] font-bold text-gray-600 mb-1">Description</label>
+                    <textarea
+                      rows={3}
+                      value={cmsData.audienceCard1Text || ''}
+                      onChange={(e) => handleCmsFieldChange('audienceCard1Text', e.target.value)}
+                      className="w-full text-xs font-medium p-2.5 rounded-lg border border-gray-200 bg-white focus:outline-none focus:ring-2 focus:ring-emerald-600 leading-relaxed"
+                    />
+                  </div>
+                </div>
+
+                <div className="bg-gray-50 p-4 rounded-xl border border-gray-200 space-y-3">
+                  <div className="text-xs font-black text-emerald-800">Audience Card 2</div>
+                  <div>
+                    <label className="block text-[11px] font-bold text-gray-600 mb-1">Title</label>
+                    <input
+                      type="text"
+                      value={cmsData.audienceCard2Title || ''}
+                      onChange={(e) => handleCmsFieldChange('audienceCard2Title', e.target.value)}
+                      className="w-full text-xs font-bold p-2.5 rounded-lg border border-gray-200 bg-white focus:outline-none focus:ring-2 focus:ring-emerald-600"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-[11px] font-bold text-gray-600 mb-1">Description</label>
+                    <textarea
+                      rows={3}
+                      value={cmsData.audienceCard2Text || ''}
+                      onChange={(e) => handleCmsFieldChange('audienceCard2Text', e.target.value)}
+                      className="w-full text-xs font-medium p-2.5 rounded-lg border border-gray-200 bg-white focus:outline-none focus:ring-2 focus:ring-emerald-600 leading-relaxed"
+                    />
+                  </div>
+                </div>
+
+                <div className="bg-gray-50 p-4 rounded-xl border border-gray-200 space-y-3">
+                  <div className="text-xs font-black text-emerald-800">Audience Card 3</div>
+                  <div>
+                    <label className="block text-[11px] font-bold text-gray-600 mb-1">Title</label>
+                    <input
+                      type="text"
+                      value={cmsData.audienceCard3Title || ''}
+                      onChange={(e) => handleCmsFieldChange('audienceCard3Title', e.target.value)}
+                      className="w-full text-xs font-bold p-2.5 rounded-lg border border-gray-200 bg-white focus:outline-none focus:ring-2 focus:ring-emerald-600"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-[11px] font-bold text-gray-600 mb-1">Description</label>
+                    <textarea
+                      rows={3}
+                      value={cmsData.audienceCard3Text || ''}
+                      onChange={(e) => handleCmsFieldChange('audienceCard3Text', e.target.value)}
+                      className="w-full text-xs font-medium p-2.5 rounded-lg border border-gray-200 bg-white focus:outline-none focus:ring-2 focus:ring-emerald-600 leading-relaxed"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* SECTION 4: PHASES & RECOGNITION */}
+          {(cmsSectionFilter === 'all' || cmsSectionFilter === 'phases') && (
+            <div className="bg-white rounded-2xl p-6 border border-emerald-100 shadow-xs space-y-5">
+              <div className="flex items-center justify-between pb-3 border-b border-gray-100">
+                <div className="flex items-center gap-3">
+                  <div className="w-9 h-9 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 flex items-center justify-center font-bold">
+                    <Award className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <h3 className="text-sm font-black text-gray-900 font-heading">QCF Phases & Recognition</h3>
+                    <p className="text-xs text-gray-500">3-phase progression journey, milestone tags, awards, and level descriptions</p>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => handleResetSection([
+                    'phasesTitle', 'phasesDescription',
+                    'phase1Title', 'phase1Badge', 'phase1Tag', 'phase1Text',
+                    'phase2Title', 'phase2Badge', 'phase2Tag', 'phase2Text',
+                    'phase3Title', 'phase3Badge', 'phase3Tag', 'phase3Text'
+                  ])}
+                  className="text-xs text-gray-500 hover:text-amber-800 font-bold flex items-center gap-1 cursor-pointer bg-gray-50 hover:bg-amber-50 px-2.5 py-1.5 rounded-lg border border-gray-200 transition-colors"
+                >
+                  <RotateCcw className="w-3 h-3" />
+                  <span>Reset Phases</span>
+                </button>
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1.5">
+                  Section Headline
+                </label>
+                <input
+                  type="text"
+                  value={cmsData.phasesTitle || ''}
+                  onChange={(e) => handleCmsFieldChange('phasesTitle', e.target.value)}
+                  className="w-full text-xs font-semibold p-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-emerald-600 bg-gray-50/50"
+                  placeholder="QCF Phases & Recognition"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1.5">
+                  Journey Descriptor (Subtext)
+                </label>
+                <textarea
+                  rows={2}
+                  value={cmsData.phasesDescription || ''}
+                  onChange={(e) => handleCmsFieldChange('phasesDescription', e.target.value)}
+                  className="w-full text-xs font-medium p-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-emerald-600 bg-gray-50/50 leading-relaxed"
+                />
+              </div>
+
+              {/* 3 Phase Cards */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-2">
+                
+                {/* Phase 1 */}
+                <div className="bg-gray-50 p-4 rounded-xl border border-gray-200 space-y-3">
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-black uppercase text-emerald-800 bg-emerald-100 px-2.5 py-0.5 rounded-full">Phase 1</span>
+                    <span className="text-[11px] text-gray-500 font-bold">Foundational</span>
+                  </div>
+                  <div>
+                    <label className="block text-[11px] font-bold text-gray-600 mb-1">Title</label>
+                    <input
+                      type="text"
+                      value={cmsData.phase1Title || ''}
+                      onChange={(e) => handleCmsFieldChange('phase1Title', e.target.value)}
+                      className="w-full text-xs font-bold p-2.5 rounded-lg border border-gray-200 bg-white focus:outline-none focus:ring-2 focus:ring-emerald-600"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-[11px] font-bold text-gray-600 mb-1">Recognition Badge Subtitle</label>
+                    <input
+                      type="text"
+                      value={cmsData.phase1Badge || ''}
+                      onChange={(e) => handleCmsFieldChange('phase1Badge', e.target.value)}
+                      className="w-full text-xs font-bold p-2.5 rounded-lg border border-gray-200 bg-white focus:outline-none focus:ring-2 focus:ring-emerald-600 text-emerald-800"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-[11px] font-bold text-gray-600 mb-1">Bottom Milestone Tag</label>
+                    <input
+                      type="text"
+                      value={cmsData.phase1Tag || ''}
+                      onChange={(e) => handleCmsFieldChange('phase1Tag', e.target.value)}
+                      className="w-full text-xs font-semibold p-2.5 rounded-lg border border-gray-200 bg-white focus:outline-none focus:ring-2 focus:ring-emerald-600"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-[11px] font-bold text-gray-600 mb-1">Description</label>
+                    <textarea
+                      rows={4}
+                      value={cmsData.phase1Text || ''}
+                      onChange={(e) => handleCmsFieldChange('phase1Text', e.target.value)}
+                      className="w-full text-xs font-medium p-2.5 rounded-lg border border-gray-200 bg-white focus:outline-none focus:ring-2 focus:ring-emerald-600 leading-relaxed"
+                    />
+                  </div>
+                </div>
+
+                {/* Phase 2 */}
+                <div className="bg-gray-50 p-4 rounded-xl border border-gray-200 space-y-3">
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-black uppercase text-emerald-800 bg-emerald-100 px-2.5 py-0.5 rounded-full">Phase 2</span>
+                    <span className="text-[11px] text-gray-500 font-bold">Commitment</span>
+                  </div>
+                  <div>
+                    <label className="block text-[11px] font-bold text-gray-600 mb-1">Title</label>
+                    <input
+                      type="text"
+                      value={cmsData.phase2Title || ''}
+                      onChange={(e) => handleCmsFieldChange('phase2Title', e.target.value)}
+                      className="w-full text-xs font-bold p-2.5 rounded-lg border border-gray-200 bg-white focus:outline-none focus:ring-2 focus:ring-emerald-600"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-[11px] font-bold text-gray-600 mb-1">Recognition Badge Subtitle</label>
+                    <input
+                      type="text"
+                      value={cmsData.phase2Badge || ''}
+                      onChange={(e) => handleCmsFieldChange('phase2Badge', e.target.value)}
+                      className="w-full text-xs font-bold p-2.5 rounded-lg border border-gray-200 bg-white focus:outline-none focus:ring-2 focus:ring-emerald-600 text-emerald-800"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-[11px] font-bold text-gray-600 mb-1">Bottom Milestone Tag</label>
+                    <input
+                      type="text"
+                      value={cmsData.phase2Tag || ''}
+                      onChange={(e) => handleCmsFieldChange('phase2Tag', e.target.value)}
+                      className="w-full text-xs font-semibold p-2.5 rounded-lg border border-gray-200 bg-white focus:outline-none focus:ring-2 focus:ring-emerald-600"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-[11px] font-bold text-gray-600 mb-1">Description</label>
+                    <textarea
+                      rows={4}
+                      value={cmsData.phase2Text || ''}
+                      onChange={(e) => handleCmsFieldChange('phase2Text', e.target.value)}
+                      className="w-full text-xs font-medium p-2.5 rounded-lg border border-gray-200 bg-white focus:outline-none focus:ring-2 focus:ring-emerald-600 leading-relaxed"
+                    />
+                  </div>
+                </div>
+
+                {/* Phase 3 */}
+                <div className="bg-gray-50 p-4 rounded-xl border border-gray-200 space-y-3">
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-black uppercase text-emerald-800 bg-emerald-100 px-2.5 py-0.5 rounded-full">Phase 3</span>
+                    <span className="text-[11px] text-gray-500 font-bold">Excellence</span>
+                  </div>
+                  <div>
+                    <label className="block text-[11px] font-bold text-gray-600 mb-1">Title</label>
+                    <input
+                      type="text"
+                      value={cmsData.phase3Title || ''}
+                      onChange={(e) => handleCmsFieldChange('phase3Title', e.target.value)}
+                      className="w-full text-xs font-bold p-2.5 rounded-lg border border-gray-200 bg-white focus:outline-none focus:ring-2 focus:ring-emerald-600"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-[11px] font-bold text-gray-600 mb-1">Recognition Badge Subtitle</label>
+                    <input
+                      type="text"
+                      value={cmsData.phase3Badge || ''}
+                      onChange={(e) => handleCmsFieldChange('phase3Badge', e.target.value)}
+                      className="w-full text-xs font-bold p-2.5 rounded-lg border border-gray-200 bg-white focus:outline-none focus:ring-2 focus:ring-emerald-600 text-emerald-800"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-[11px] font-bold text-gray-600 mb-1">Bottom Milestone Tag</label>
+                    <input
+                      type="text"
+                      value={cmsData.phase3Tag || ''}
+                      onChange={(e) => handleCmsFieldChange('phase3Tag', e.target.value)}
+                      className="w-full text-xs font-semibold p-2.5 rounded-lg border border-gray-200 bg-white focus:outline-none focus:ring-2 focus:ring-emerald-600"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-[11px] font-bold text-gray-600 mb-1">Description</label>
+                    <textarea
+                      rows={4}
+                      value={cmsData.phase3Text || ''}
+                      onChange={(e) => handleCmsFieldChange('phase3Text', e.target.value)}
+                      className="w-full text-xs font-medium p-2.5 rounded-lg border border-gray-200 bg-white focus:outline-none focus:ring-2 focus:ring-emerald-600 leading-relaxed"
+                    />
+                  </div>
+                </div>
+
+              </div>
+            </div>
+          )}
+
+          {/* SECTION 5: SCHOOL SIGN-IN & REGISTRATION PAGE */}
+          {(cmsSectionFilter === 'all' || cmsSectionFilter === 'school') && (
+            <div className="bg-white rounded-2xl p-6 border border-emerald-100 shadow-xs space-y-5">
+              <div className="flex items-center justify-between pb-3 border-b border-gray-100">
+                <div className="flex items-center gap-3">
+                  <div className="w-9 h-9 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 flex items-center justify-center font-bold">
+                    <School className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <h3 className="text-sm font-black text-gray-900 font-heading">School Sign-In & Registration Portal</h3>
+                    <p className="text-xs text-gray-500">Left headline, descriptor quote, workspace box header, and contact support email</p>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => handleResetSection([
+                    'schoolSignTitle', 'schoolSignSubtitle', 'schoolSignFormTitle', 'schoolSignSupportEmail'
+                  ])}
+                  className="text-xs text-gray-500 hover:text-amber-800 font-bold flex items-center gap-1 cursor-pointer bg-gray-50 hover:bg-amber-50 px-2.5 py-1.5 rounded-lg border border-gray-200 transition-colors"
+                >
+                  <RotateCcw className="w-3 h-3" />
+                  <span>Reset School Page</span>
+                </button>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1.5">
+                    Main Left Headline
+                  </label>
+                  <input
+                    type="text"
+                    value={cmsData.schoolSignTitle || ''}
+                    onChange={(e) => handleCmsFieldChange('schoolSignTitle', e.target.value)}
+                    className="w-full text-xs font-semibold p-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-emerald-600 bg-gray-50/50"
+                    placeholder="Schools’ Self-Evaluation"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1.5">
+                    Sign-In Box Header Title
+                  </label>
+                  <input
+                    type="text"
+                    value={cmsData.schoolSignFormTitle || ''}
+                    onChange={(e) => handleCmsFieldChange('schoolSignFormTitle', e.target.value)}
+                    className="w-full text-xs font-semibold p-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-emerald-600 bg-gray-50/50"
+                    placeholder="School Workspace"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1.5">
+                  Left Section Descriptor Subtext
+                </label>
+                <textarea
+                  rows={3}
+                  value={cmsData.schoolSignSubtitle || ''}
+                  onChange={(e) => handleCmsFieldChange('schoolSignSubtitle', e.target.value)}
+                  className="w-full text-xs font-medium p-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-emerald-600 bg-gray-50/50 leading-relaxed"
+                  placeholder="The school improvement and quality assurance framework is designed to strengthen academic guidance and career readiness across schools."
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1.5">
+                  Registration Support Email Link
+                </label>
+                <input
+                  type="email"
+                  value={cmsData.schoolSignSupportEmail || ''}
+                  onChange={(e) => handleCmsFieldChange('schoolSignSupportEmail', e.target.value)}
+                  className="w-full text-xs font-semibold p-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-emerald-600 bg-gray-50/50"
+                  placeholder="mail@qualitycareersframework.com"
+                />
+                <p className="text-[11px] text-gray-500 mt-1">Appears on "Don't have an account? Get in touch with us at..." link</p>
+              </div>
+            </div>
+          )}
+
+          {/* SECTION 6: FOOTER & METADATA */}
+          {(cmsSectionFilter === 'all' || cmsSectionFilter === 'footer') && (
+            <div className="bg-white rounded-2xl p-6 border border-emerald-100 shadow-xs space-y-5">
+              <div className="flex items-center justify-between pb-3 border-b border-gray-100">
+                <div className="flex items-center gap-3">
+                  <div className="w-9 h-9 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 flex items-center justify-center font-bold">
+                    <ShieldCheck className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <h3 className="text-sm font-black text-gray-900 font-heading">Footer & Regional Disclaimer</h3>
+                    <p className="text-xs text-gray-500">Global bottom bar copyright notice and regional accreditation standard line</p>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => handleResetSection(['footerCopyright', 'footerTagline'])}
+                  className="text-xs text-gray-500 hover:text-amber-800 font-bold flex items-center gap-1 cursor-pointer bg-gray-50 hover:bg-amber-50 px-2.5 py-1.5 rounded-lg border border-gray-200 transition-colors"
+                >
+                  <RotateCcw className="w-3 h-3" />
+                  <span>Reset Footer</span>
+                </button>
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1.5">
+                  Footer Copyright Line
+                </label>
+                <input
+                  type="text"
+                  value={cmsData.footerCopyright || ''}
+                  onChange={(e) => handleCmsFieldChange('footerCopyright', e.target.value)}
+                  className="w-full text-xs font-semibold p-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-emerald-600 bg-gray-50/50"
+                  placeholder="Quality Careers Framework (QCF) • Academic Guidance & Career Readiness Schools’ Self-Evaluation © 2026"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1.5">
+                  Regional Recognition Tagline
+                </label>
+                <input
+                  type="text"
+                  value={cmsData.footerTagline || ''}
+                  onChange={(e) => handleCmsFieldChange('footerTagline', e.target.value)}
+                  className="w-full text-xs font-semibold p-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-emerald-600 bg-gray-50/50"
+                  placeholder="The Gulf Region Future Readiness Recognition Standard"
+                />
+              </div>
+            </div>
+          )}
+
+          {/* STICKY BOTTOM SAVE ACTION BAR */}
+          <div className="fixed bottom-4 inset-x-4 max-w-5xl mx-auto z-40 bg-[#122E24]/95 backdrop-blur-md text-white border border-emerald-700/80 p-3.5 px-6 rounded-2xl shadow-2xl flex items-center justify-between gap-4">
+            <div className="flex items-center gap-3">
+              {isCmsDirty ? (
+                <div className="flex items-center gap-2">
+                  <span className="w-2.5 h-2.5 rounded-full bg-amber-400 animate-pulse"></span>
+                  <span className="text-xs font-bold text-amber-200">You have unsaved text changes in the CMS</span>
+                </div>
+              ) : (
+                <div className="flex items-center gap-2">
+                  <CheckCircle className="w-4 h-4 text-emerald-400" />
+                  <span className="text-xs font-bold text-emerald-200">All CMS edits are saved & live</span>
+                </div>
+              )}
+            </div>
+
+            <div className="flex items-center gap-2.5">
+              <button
+                type="button"
+                onClick={() => setIsConfirmCmsResetOpen(true)}
+                className="px-3.5 py-2 bg-emerald-950/80 hover:bg-emerald-900 border border-emerald-700/80 text-emerald-200 hover:text-white font-bold text-xs rounded-xl transition-all cursor-pointer"
+              >
+                Reset All to Defaults
+              </button>
+
+              <button
+                type="button"
+                onClick={handleSaveCmsChanges}
+                className="px-5 py-2 bg-emerald-500 hover:bg-emerald-400 text-emerald-950 font-black text-xs rounded-xl shadow-md transition-all flex items-center gap-2 cursor-pointer"
+              >
+                <Save className="w-4 h-4" />
+                <span>Save All Changes</span>
+              </button>
+            </div>
+          </div>
+
+        </div>
+      )}
+
       {/* EDIT QUESTION MODAL */}
       {isEditModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-emerald-950/70 backdrop-blur-xs animate-in fade-in duration-200">
@@ -1015,6 +1918,54 @@ export default function AdminView({
                 >
                   <Clock className="w-4 h-4" />
                   <span>Reset All to Default 42</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* CONFIRMATION MODAL: RESET CMS TO FACTORY DEFAULTS */}
+      {isConfirmCmsResetOpen && (
+        <div className="fixed inset-0 z-60 flex items-center justify-center p-4 bg-emerald-950/80 backdrop-blur-sm animate-in fade-in duration-200">
+          <div className="bg-white rounded-2xl shadow-2xl border border-amber-200 w-full max-w-lg overflow-hidden">
+            <div className="bg-[#16362B] text-white p-4 px-6 flex items-center justify-between">
+              <div className="flex items-center gap-2 font-extrabold text-sm text-amber-300">
+                <RotateCcw className="w-4 h-4 text-amber-400" />
+                <span>Reset All CMS Site Content</span>
+              </div>
+              <button
+                onClick={() => setIsConfirmCmsResetOpen(false)}
+                className="text-emerald-300 hover:text-white cursor-pointer"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div className="p-6 space-y-4">
+              <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 text-amber-950 text-xs flex items-start gap-3">
+                <AlertCircle className="w-5 h-5 text-amber-700 shrink-0 mt-0.5" />
+                <div>
+                  <span className="font-extrabold block">Warning: Reset All Copy to Factory Defaults</span>
+                  This will discard all custom text changes you have made across all sections of the Landing Page and School Sign-In page, reverting everything back to the original default text.
+                </div>
+              </div>
+
+              <div className="flex items-center justify-end gap-3 pt-2">
+                <button
+                  type="button"
+                  onClick={() => setIsConfirmCmsResetOpen(false)}
+                  className="px-4 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs font-bold rounded-xl cursor-pointer"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  onClick={handleResetCmsToDefaults}
+                  className="px-5 py-2.5 bg-amber-600 hover:bg-amber-700 text-white text-xs font-extrabold rounded-xl flex items-center gap-2 shadow-md cursor-pointer"
+                >
+                  <RotateCcw className="w-4 h-4" />
+                  <span>Reset All to Defaults</span>
                 </button>
               </div>
             </div>

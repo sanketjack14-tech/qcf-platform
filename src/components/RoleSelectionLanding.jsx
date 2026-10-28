@@ -4,13 +4,16 @@ import {
   School, ShieldCheck, ArrowRight, Mail, KeyRound, User, Building, MapPin, Ticket, CheckCircle2, LayoutDashboard
 } from 'lucide-react';
 import { QCF_DOMAINS } from '../data/qcfData';
+import { DEFAULT_CMS_CONTENT } from '../data/defaultCmsContent';
 
 export default function RoleSelectionLanding({ 
   onSelectRole, 
   onBackToHome, 
   initialTab = 'school', 
-  initialAuthMode = 'signin' 
+  initialAuthMode = 'signin',
+  cmsContent = {}
 }) {
+  const cms = { ...DEFAULT_CMS_CONTENT, ...cmsContent };
   // Top Header Mode Toggle: 'school' | 'partner'
   const [activeTab, setActiveTab] = useState(initialTab);
 
@@ -116,12 +119,12 @@ export default function RoleSelectionLanding({
           {/* LEFT SECTION (Col 1-7): Descriptor */}
           <div className="lg:col-span-7 space-y-6 text-left pr-0 lg:pr-6">
             <h1 className="text-3xl sm:text-5xl font-black text-white font-heading tracking-tight">
-              Schools’ Self-Evaluation
+              {cms.schoolSignTitle}
             </h1>
 
             {/* QCF Descriptor Subtext */}
             <p className="text-emerald-100 text-base sm:text-lg font-medium leading-relaxed max-w-2xl border-l-4 border-emerald-500 pl-4 py-1">
-              The school improvement and quality assurance framework is designed to strengthen academic guidance and career readiness across schools.
+              {cms.schoolSignSubtitle}
             </p>
           </div>
 
@@ -137,7 +140,7 @@ export default function RoleSelectionLanding({
                 </div>
                 
                 <h2 className="text-2xl font-black text-gray-900 font-heading">
-                  {activeTab === 'school' ? 'School Workspace' : activeTab === 'partner' ? 'QCF Partner Workspace' : 'Executive Admin Workspace'}
+                  {activeTab === 'school' ? (cms.schoolSignFormTitle || 'School Workspace') : activeTab === 'partner' ? 'QCF Partner Workspace' : 'Executive Admin Workspace'}
                 </h2>
 
                 {/* If activeTab === 'school', render Sign-in / Sign-up Sub-Toggle */}
@@ -382,10 +385,10 @@ export default function RoleSelectionLanding({
                   <p className="text-xs text-gray-600 font-medium">
                     Don't have an account?{' '}
                     <a
-                      href="mailto:mail@qualitycareersframework.com"
+                      href={`mailto:${cms.schoolSignSupportEmail || 'mail@qualitycareersframework.com'}`}
                       className="text-emerald-800 font-extrabold hover:underline inline-flex items-center gap-1"
                     >
-                      <span>Get in touch with us at mail@qualitycareersframework.com</span>
+                      <span>Get in touch with us at {cms.schoolSignSupportEmail || 'mail@qualitycareersframework.com'}</span>
                     </a>
                   </p>
                 </div>
