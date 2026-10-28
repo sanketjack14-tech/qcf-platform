@@ -17,7 +17,9 @@ import {
   getEvidenceFromDB, 
   saveEvidenceToDB, 
   deleteEvidenceFromDB,
-  saveSchoolToDB
+  saveSchoolToDB,
+  getCmsContentFromDB,
+  saveCmsContentToDB
 } from './lib/supabaseClient';
 
 export default function App() {
@@ -160,6 +162,7 @@ export default function App() {
     } catch (e) {
       console.error('Error saving qcf_cms_content:', e);
     }
+    saveCmsContentToDB(updatedContent);
   };
 
   const handleResetCms = () => {
@@ -169,6 +172,7 @@ export default function App() {
     } catch (e) {
       console.error('Error clearing qcf_cms_content:', e);
     }
+    saveCmsContentToDB(DEFAULT_CMS_CONTENT);
   };
 
   const defaultDubaiRatings = {
@@ -245,6 +249,17 @@ export default function App() {
         // 4. Evidence for Active School
         const dbEv = await getEvidenceFromDB(activeSchool.id);
         setEvidenceList(dbEv || []);
+      }
+
+      // 5. CMS Content for Landing & School Sign-In Pages
+      try {
+        const dbCms = await getCmsContentFromDB();
+        if (dbCms && typeof dbCms === 'object') {
+          setCmsContent(prev => ({ ...prev, ...dbCms }));
+          localStorage.setItem('qcf_cms_content', JSON.stringify(dbCms));
+        }
+      } catch (e) {
+        console.error('Error syncing CMS content from Supabase:', e);
       }
     }
 

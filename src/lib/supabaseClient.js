@@ -350,3 +350,49 @@ export async function uploadMediaToSupabaseVault(fileOrBlob, fileName) {
     return null;
   }
 }
+
+// ==========================================
+// 5. CMS SITE CONTENT (LANDING & SCHOOL SIGN-IN)
+// ==========================================
+export async function getCmsContentFromDB() {
+  if (!isSupabaseConfigured) return null;
+  try {
+    const { data, error } = await supabase
+      .from('evidence_items')
+      .select('note')
+      .eq('id', 'cms-master-content')
+      .maybeSingle();
+
+    if (error || !data || !data.note) {
+      return null;
+    }
+
+    return JSON.parse(data.note);
+  } catch (err) {
+    console.error('Supabase getCmsContentFromDB error:', err);
+    return null;
+  }
+}
+
+export async function saveCmsContentToDB(cmsContent) {
+  if (!isSupabaseConfigured || !cmsContent) return;
+  try {
+    const payload = {
+      id: 'cms-master-content',
+      statement_id: 'config',
+      school_id: 'system',
+      type: 'json',
+      title: 'QCF Master CMS Content',
+      url: '',
+      note: JSON.stringify(cmsContent),
+      date: new Date().toISOString()
+    };
+
+    const { error } = await supabase.from('evidence_items').upsert(payload);
+    if (error) {
+      console.error('Supabase saveCmsContentToDB error:', error);
+    }
+  } catch (err) {
+    console.error('Supabase saveCmsContentToDB exception:', err);
+  }
+}
